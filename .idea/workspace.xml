@@ -18,10 +18,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): add database schema initialization for auth tables&#10;&#10;Enable automatic creation of authentication tables with `AUTH_DB_AUTO_INIT` and a new `secure-langgraph init-db` CLI command. Added startup hook to ensure schema initialization based on configuration.&#10;&#10;BREAKING CHANGE: Removed SQL file-based schema initialization in favor of runtime and CLI-based schema setup.">
-      <change afterPath="$PROJECT_DIR$/.pre-commit-config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,25 +37,25 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "thwolter"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;thwolter&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/thwolter/langgraph-secure-gateway.git",
-    "accountId": "1e5d352a-10cf-444b-856a-c5087c213b28"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/thwolter/langgraph-secure-gateway.git&quot;,
+    &quot;accountId&quot;: &quot;1e5d352a-10cf-444b-856a-c5087c213b28&quot;
   }
-}]]></component>
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="3CL0jqdNmAtxluOJCBWp1nqS7yW" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -62,24 +64,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/thomas/PycharmProjects/langgraph-secure-gateway",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas/PycharmProjects/langgraph-secure-gateway&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -95,7 +102,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1776149681510</updated>
-      <workItem from="1776149682593" duration="1757000" />
+      <workItem from="1776149682593" duration="2498000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -113,7 +120,31 @@
       <option name="project" value="LOCAL" />
       <updated>1776151248319</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: add pre-commit">
+      <option name="closed" value="true" />
+      <created>1776151490526</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1776151490526</updated>
+    </task>
+    <task id="LOCAL-00004" summary="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes.">
+      <option name="closed" value="true" />
+      <created>1776151535034</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1776151535034</updated>
+    </task>
+    <task id="LOCAL-00005" summary="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes.">
+      <option name="closed" value="true" />
+      <created>1776151571459</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1776151571459</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -122,6 +153,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
     <MESSAGE value="feat(auth): add database schema initialization for auth tables&#10;&#10;Enable automatic creation of authentication tables with `AUTH_DB_AUTO_INIT` and a new `secure-langgraph init-db` CLI command. Added startup hook to ensure schema initialization based on configuration.&#10;&#10;BREAKING CHANGE: Removed SQL file-based schema initialization in favor of runtime and CLI-based schema setup." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): add database schema initialization for auth tables&#10;&#10;Enable automatic creation of authentication tables with `AUTH_DB_AUTO_INIT` and a new `secure-langgraph init-db` CLI command. Added startup hook to ensure schema initialization based on configuration.&#10;&#10;BREAKING CHANGE: Removed SQL file-based schema initialization in favor of runtime and CLI-based schema setup." />
+    <MESSAGE value="feat: add pre-commit" />
+    <MESSAGE value="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes." />
+    <option name="LAST_COMMIT_MESSAGE" value="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes." />
   </component>
 </project>

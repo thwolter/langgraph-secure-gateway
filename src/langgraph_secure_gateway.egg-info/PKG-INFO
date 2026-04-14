@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: langgraph-secure-gateway
-Version: 0.1.0
+Version: 0.2.0
 Summary: Reusable auth gateway and deployment tooling for LangGraph apps.
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown

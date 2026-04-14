@@ -84,8 +84,14 @@ class UserAdmin(ModelView, model=User):
         User.created_at,
     ]
     column_details_exclude_list = [User.password_hash]
+    column_labels = {User.password_hash: 'Password'}
 
     form_columns = [User.username, User.password_hash, User.is_active, User.is_admin]
+    form_args = {
+        'password_hash': {
+            'label': 'Password',
+        }
+    }
     form_widget_args = {
         'password_hash': {
             'type': 'password',
