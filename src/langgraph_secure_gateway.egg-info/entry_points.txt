@@ -1,0 +1,2 @@
+[console_scripts]
+secure-langgraph = langgraph_secure_gateway.cli:app

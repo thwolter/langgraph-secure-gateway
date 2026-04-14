@@ -1,0 +1,40 @@
+Metadata-Version: 2.4
+Name: langgraph-secure-gateway
+Version: 0.1.0
+Summary: Reusable auth gateway and deployment tooling for LangGraph apps.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: bcrypt<4.1,>=4.0.1
+Requires-Dist: fastapi>=0.121.0
+Requires-Dist: httpx>=0.28.0
+Requires-Dist: itsdangerous>=2.2.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: PyJWT>=2.10.1
+Requires-Dist: pydantic-settings>=2.11.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: psycopg[binary]>=3.2.10
+Requires-Dist: sqladmin>=0.21.0
+Requires-Dist: sqlalchemy>=2.0.44
+Requires-Dist: typer>=0.16.0
+Requires-Dist: uvicorn>=0.38.0
+
+# langgraph-secure-gateway
+
+Reusable security gateway package for LangGraph applications.
+
+## CLI
+
+- `secure-langgraph build`: wrapper around `langgraph build` with safe defaults
+- `secure-langgraph init-deploy`: generate deploy files for a new LangGraph repo
+- `secure-langgraph create-admin-user`: bootstrap or rotate admin credentials
+- `secure-langgraph init-db`: create auth tables in Postgres
+
+## Gateway entrypoint
+
+Run with uvicorn:
+
+```bash
+uvicorn langgraph_secure_gateway.entrypoints:app --host 0.0.0.0 --port 8000
+```
+
+Set `AUTH_DB_AUTO_INIT=true` to auto-create auth tables on gateway startup.
