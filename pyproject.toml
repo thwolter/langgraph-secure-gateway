@@ -1,6 +1,6 @@
 [project]
 name = "langgraph-secure-gateway"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reusable auth gateway and deployment tooling for LangGraph apps."
 readme = "README.md"
 requires-python = ">=3.11"
