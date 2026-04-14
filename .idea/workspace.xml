@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AIAssistantCustomInstructionsStorage">
+    <option name="instructions">
+      <map>
+        <entry key="AIAssistant.VCS.GenerateCommitMessage">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.VCS.GenerateCommitMessage" />
+              <option name="content" value="Generate a **Git commit message** that strictly follows the **Conventional Commits 1.0.0** specification.&#10;&#10;Use this format:&#10;&#10;`&lt;type&gt;[optional scope][optional !]: &lt;description&gt;`&#10;&#10;Optional sections:&#10;&#10;* blank line&#10;* body&#10;* blank line&#10;* footer(s)&#10;&#10;### Rules&#10;&#10;* The commit message **must** start with a valid type such as: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`, or `style`.&#10;* A **scope** may be included in parentheses if helpful, for example: `feat(api):`.&#10;* Use `!` before the colon if the change is **breaking**, for example: `feat(api)!:`.&#10;* The **description** must be short, precise, and written in **imperative style**.&#10;* Add a **body** only if additional context is useful.&#10;* Add **footers** only if needed, for example:&#10;&#10;  * `BREAKING CHANGE: ...`&#10;  * `Refs: #123`&#10;  * `Reviewed-by: Name`&#10;&#10;### Semantic intent&#10;&#10;* Use `feat` for a **new feature**&#10;* Use `fix` for a **bug fix**&#10;* Use `BREAKING CHANGE` or `!` for **breaking changes**&#10;&#10;### Output requirements&#10;&#10;* Return **only the final commit message**&#10;* Do **not** add explanations, labels, markdown fences, or alternative options&#10;* Keep the message concise but complete&#10;* If the change could reasonably be split into multiple commits, choose the **single most important intent**&#10;&#10;### Input&#10;&#10;Generate the commit message from the following change description:&#10;&#10;`{{CHANGE_DESCRIPTION}}`&#10;" />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="Initial commit">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +39,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "thwolter"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/thwolter/langgraph-secure-gateway.git",
+    "accountId": "1e5d352a-10cf-444b-856a-c5087c213b28"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -58,11 +95,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1776149681510</updated>
-      <workItem from="1776149682593" duration="382000" />
+      <workItem from="1776149682593" duration="1450000" />
     </task>
+    <task id="LOCAL-00001" summary="Initial commit">
+      <option name="closed" value="true" />
+      <created>1776150233180</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1776150233180</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
   </component>
 </project>

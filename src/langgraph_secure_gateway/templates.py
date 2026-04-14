@@ -23,7 +23,6 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - langgraph-data:/var/lib/postgresql/data
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: pg_isready -U postgres
       start_period: 10s
@@ -51,8 +50,8 @@ services:
     pull_policy: never
     image: \"{image_tag}\"
     entrypoint: [\"python\", \"-m\", \"uvicorn\", \"langgraph_secure_gateway.entrypoints:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]
-    ports:
-      - \"{public_port}:8000\"
+    expose:
+      - \"8000\"
     depends_on:
       langgraph-api:
         condition: service_started
@@ -64,6 +63,7 @@ services:
       JWT_ALGORITHM: ${{JWT_ALGORITHM:-HS256}}
       JWT_EXPIRE_MINUTES: ${{JWT_EXPIRE_MINUTES:-60}}
       ADMIN_SESSION_SECRET: ${{ADMIN_SESSION_SECRET}}
+      AUTH_DB_AUTO_INIT: ${{AUTH_DB_AUTO_INIT:-true}}
       LANGGRAPH_UPSTREAM_URL: http://langgraph-api:8000
 """
 
@@ -73,27 +73,7 @@ JWT_SECRET=
 JWT_ALGORITHM=HS256
 JWT_EXPIRE_MINUTES=60
 ADMIN_SESSION_SECRET=
-"""
-
-AUTH_SQL_TEMPLATE = """CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS panel_access (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  panel_key VARCHAR(128) NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT uq_user_panel UNIQUE (user_id, panel_key)
-);
-
-CREATE INDEX IF NOT EXISTS idx_panel_access_user_id ON panel_access(user_id);
+AUTH_DB_AUTO_INIT=true
 """
 
 DOCKERFILE_TEMPLATE = """FROM langchain/langgraph-api:3.11-wolfi

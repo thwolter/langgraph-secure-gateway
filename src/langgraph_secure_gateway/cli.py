@@ -8,9 +8,9 @@ from pathlib import Path
 
 import typer
 
+from langgraph_secure_gateway.auth.db import ensure_auth_schema
 from langgraph_secure_gateway.auth_cli import create_or_update_admin_user
 from langgraph_secure_gateway.templates import (
-    AUTH_SQL_TEMPLATE,
     COMPOSE_TEMPLATE,
     DOCKERFILE_TEMPLATE,
     ENV_EXAMPLE_TEMPLATE,
@@ -64,11 +64,17 @@ def create_admin_user(
     typer.echo(f"Admin user '{username}' {action}.")
 
 
+@app.command("init-db")
+def init_db() -> None:
+    """Create auth schema tables in Postgres if they do not exist."""
+    ensure_auth_schema()
+    typer.echo("Auth schema ensured.")
+
+
 @app.command("init-deploy")
 def init_deploy(
     cwd: Path = typer.Option(Path("."), "--cwd"),
     image_tag: str = typer.Option("langgraph-app", "--image-tag"),
-    public_port: int = typer.Option(8123, "--public-port"),
     force: bool = typer.Option(False, "--force"),
     include_dockerfile: bool = typer.Option(True, "--include-dockerfile/--no-include-dockerfile"),
     security_dependency: str = typer.Option(
@@ -81,16 +87,14 @@ def init_deploy(
     target = cwd.resolve()
     compose_path = target / "docker-compose.yaml"
     env_example_path = target / ".env.example"
-    sql_path = target / "docker/postgres/init/001_auth.sql"
     dockerfile_path = target / "Dockerfile"
 
     wrote_compose = write_if_missing(
         compose_path,
-        COMPOSE_TEMPLATE.format(image_tag=image_tag, public_port=public_port),
+        COMPOSE_TEMPLATE.format(image_tag=image_tag),
         force=force,
     )
     wrote_env = write_if_missing(env_example_path, ENV_EXAMPLE_TEMPLATE, force=force)
-    wrote_sql = write_if_missing(sql_path, AUTH_SQL_TEMPLATE, force=force)
     wrote_dockerfile = False
     if include_dockerfile:
         wrote_dockerfile = write_if_missing(dockerfile_path, DOCKERFILE_TEMPLATE, force=force)
@@ -108,7 +112,6 @@ def init_deploy(
     for path, wrote in [
         (compose_path, wrote_compose),
         (env_example_path, wrote_env),
-        (sql_path, wrote_sql),
         (dockerfile_path, wrote_dockerfile if include_dockerfile else False),
     ]:
         if include_dockerfile or path != dockerfile_path:

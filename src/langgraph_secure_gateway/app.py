@@ -8,6 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from langgraph_secure_gateway.auth.admin import mount_admin
 from langgraph_secure_gateway.auth.config import settings
+from langgraph_secure_gateway.auth.db import ensure_auth_schema
 from langgraph_secure_gateway.auth.routes import router as auth_router
 from langgraph_secure_gateway.gateway.proxy import router as proxy_router
 
@@ -24,6 +25,11 @@ def create_gateway_app() -> FastAPI:
         SessionMiddleware,
         secret_key=settings.admin_session_secret,
     )
+
+    @app.on_event("startup")
+    async def maybe_init_auth_schema() -> None:
+        if settings.auth_db_auto_init:
+            ensure_auth_schema()
 
     @app.get("/healthz")
     async def healthz() -> dict[str, str]:

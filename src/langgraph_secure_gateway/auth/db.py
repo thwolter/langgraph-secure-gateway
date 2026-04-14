@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from langgraph_secure_gateway.auth.config import settings
+from langgraph_secure_gateway.auth.models import Base
 
 
 def _normalize_postgres_uri(uri: str) -> str:
@@ -27,3 +28,8 @@ def get_session() -> Generator[Session, None, None]:
     """Provide a short-lived SQLAlchemy session."""
     with SessionLocal() as session:
         yield session
+
+
+def ensure_auth_schema() -> None:
+    """Create auth tables if they do not exist yet."""
+    Base.metadata.create_all(bind=engine)
