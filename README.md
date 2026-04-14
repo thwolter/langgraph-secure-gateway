@@ -18,3 +18,10 @@ uvicorn langgraph_secure_gateway.entrypoints:app --host 0.0.0.0 --port 8000
 ```
 
 Set `AUTH_DB_AUTO_INIT=true` to auto-create auth tables on gateway startup.
+
+## API documentation
+
+- Gateway docs (this app): `/gateway/docs`
+- Gateway OpenAPI JSON (this app): `/gateway/openapi.json`
+- Upstream LangGraph docs (proxied): `/docs`
+- Upstream OpenAPI JSON (proxied): `/openapi.json`

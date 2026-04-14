@@ -17,9 +17,9 @@ def create_gateway_app() -> FastAPI:
     """Create and configure the secure gateway application."""
     app = FastAPI(
         title='LangGraph Secure Gateway',
-        docs_url=None,
-        redoc_url=None,
-        openapi_url=None,
+        docs_url='/gateway/docs',
+        redoc_url='/gateway/redoc',
+        openapi_url='/gateway/openapi.json',
     )
     app.add_middleware(
         SessionMiddleware,
