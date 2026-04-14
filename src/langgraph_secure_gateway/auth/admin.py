@@ -26,8 +26,8 @@ class AdminAuth(AuthenticationBackend):
 
     async def login(self, request: Request) -> bool:
         form = await request.form()
-        username = str(form.get("username", "")).strip()
-        password = str(form.get("password", "")).strip()
+        username = str(form.get('username', '')).strip()
+        password = str(form.get('password', '')).strip()
 
         with SessionLocal() as session:
             user = _get_user_by_username(session, username)
@@ -38,9 +38,9 @@ class AdminAuth(AuthenticationBackend):
 
         request.session.update(
             {
-                "token": f"admin:{user.id}",
-                "admin_user_id": user.id,
-                "admin_username": user.username,
+                'token': f'admin:{user.id}',
+                'admin_user_id': user.id,
+                'admin_username': user.username,
             }
         )
         return True
@@ -50,55 +50,69 @@ class AdminAuth(AuthenticationBackend):
         return True
 
     async def authenticate(self, request: Request) -> Response | bool:
-        user_id = request.session.get("admin_user_id")
+        user_id = request.session.get('admin_user_id')
         if user_id is None:
-            return RedirectResponse(url="/admin/login", status_code=302)
+            return RedirectResponse(url='/admin/login', status_code=302)
 
         with SessionLocal() as session:
             user = session.get(User, int(user_id))
             if user is None or not user.is_active or not user.is_admin:
                 request.session.clear()
-                return RedirectResponse(url="/admin/login", status_code=302)
+                return RedirectResponse(url='/admin/login', status_code=302)
 
         return True
 
 
 class UserAdmin(ModelView, model=User):
-    name = "User"
-    name_plural = "Users"
-    icon = "fa-solid fa-user"
+    name = 'User'
+    name_plural = 'Users'
+    icon = 'fa-solid fa-user'
 
-    column_list = [User.id, User.username, User.is_active, User.is_admin, User.created_at]
+    column_list = [
+        User.id,
+        User.username,
+        User.is_active,
+        User.is_admin,
+        User.created_at,
+    ]
     column_searchable_list = [User.username]
-    column_sortable_list = [User.id, User.username, User.is_active, User.is_admin, User.created_at]
+    column_sortable_list = [
+        User.id,
+        User.username,
+        User.is_active,
+        User.is_admin,
+        User.created_at,
+    ]
     column_details_exclude_list = [User.password_hash]
 
     form_columns = [User.username, User.password_hash, User.is_active, User.is_admin]
     form_widget_args = {
-        "password_hash": {
-            "type": "password",
-            "autocomplete": "new-password",
-            "placeholder": "Enter new password",
+        'password_hash': {
+            'type': 'password',
+            'autocomplete': 'new-password',
+            'placeholder': 'Enter new password',
         }
     }
 
-    async def on_model_change(self, data, model: User, is_created: bool, request: Request) -> None:
-        raw_password = str(data.get("password_hash", "")).strip()
+    async def on_model_change(
+        self, data, model: User, is_created: bool, request: Request
+    ) -> None:
+        raw_password = str(data.get('password_hash', '')).strip()
         if not raw_password:
             if is_created:
-                raise ValueError("Password is required")
-            data.pop("password_hash", None)
+                raise ValueError('Password is required')
+            data.pop('password_hash', None)
             return
 
         from langgraph_secure_gateway.auth.security import hash_password
 
-        data["password_hash"] = hash_password(raw_password)
+        data['password_hash'] = hash_password(raw_password)
 
 
 class PanelAccessAdmin(ModelView, model=PanelAccess):
-    name = "Panel Access"
-    name_plural = "Panel Access"
-    icon = "fa-solid fa-table-cells"
+    name = 'Panel Access'
+    name_plural = 'Panel Access'
+    icon = 'fa-solid fa-table-cells'
 
     column_list = [
         PanelAccess.id,

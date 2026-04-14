@@ -23,7 +23,7 @@ class Base(DeclarativeBase):
 class User(Base):
     """Application user with credentials and privilege flags."""
 
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
@@ -40,10 +40,10 @@ class User(Base):
         onupdate=func.now(),
     )
 
-    panel_access: Mapped[list["PanelAccess"]] = relationship(
-        "PanelAccess",
-        back_populates="user",
-        cascade="all, delete-orphan",
+    panel_access: Mapped[list['PanelAccess']] = relationship(
+        'PanelAccess',
+        back_populates='user',
+        cascade='all, delete-orphan',
         passive_deletes=True,
     )
 
@@ -51,16 +51,16 @@ class User(Base):
 class PanelAccess(Base):
     """Panel authorization mapping for users."""
 
-    __tablename__ = "panel_access"
-    __table_args__ = (UniqueConstraint("user_id", "panel_key", name="uq_user_panel"),)
+    __tablename__ = 'panel_access'
+    __table_args__ = (UniqueConstraint('user_id', 'panel_key', name='uq_user_panel'),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True
     )
     panel_key: Mapped[str] = mapped_column(String(128), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
-    user: Mapped[User] = relationship("User", back_populates="panel_access")
+    user: Mapped[User] = relationship('User', back_populates='panel_access')

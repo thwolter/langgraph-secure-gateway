@@ -108,5 +108,5 @@ def write_if_missing(path: Path, content: str, *, force: bool) -> bool:
     if path.exists() and not force:
         return False
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    path.write_text(content, encoding='utf-8')
     return True

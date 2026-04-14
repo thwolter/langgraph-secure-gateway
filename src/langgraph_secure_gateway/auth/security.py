@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 
 from langgraph_secure_gateway.auth.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
@@ -23,17 +23,19 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(*, user_id: int, username: str, is_admin: bool, panels: list[str]) -> str:
+def create_access_token(
+    *, user_id: int, username: str, is_admin: bool, panels: list[str]
+) -> str:
     """Create a signed JWT access token for a specific user."""
     now = datetime.now(tz=UTC)
     expire_at = now + timedelta(minutes=settings.jwt_expire_minutes)
     payload: dict[str, Any] = {
-        "sub": str(user_id),
-        "username": username,
-        "is_admin": is_admin,
-        "panels": panels,
-        "iat": int(now.timestamp()),
-        "exp": int(expire_at.timestamp()),
+        'sub': str(user_id),
+        'username': username,
+        'is_admin': is_admin,
+        'panels': panels,
+        'iat': int(now.timestamp()),
+        'exp': int(expire_at.timestamp()),
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 

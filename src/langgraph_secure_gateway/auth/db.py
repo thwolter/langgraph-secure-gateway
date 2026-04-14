@@ -13,15 +13,19 @@ from langgraph_secure_gateway.auth.models import Base
 
 def _normalize_postgres_uri(uri: str) -> str:
     """Normalize URI aliases to SQLAlchemy-compatible psycopg dialect URIs."""
-    if uri.startswith("postgres://"):
-        return uri.replace("postgres://", "postgresql+psycopg://", 1)
-    if uri.startswith("postgresql://"):
-        return uri.replace("postgresql://", "postgresql+psycopg://", 1)
+    if uri.startswith('postgres://'):
+        return uri.replace('postgres://', 'postgresql+psycopg://', 1)
+    if uri.startswith('postgresql://'):
+        return uri.replace('postgresql://', 'postgresql+psycopg://', 1)
     return uri
 
 
-engine = create_engine(_normalize_postgres_uri(settings.postgres_uri), pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, class_=Session)
+engine = create_engine(
+    _normalize_postgres_uri(settings.postgres_uri), pool_pre_ping=True
+)
+SessionLocal = sessionmaker(
+    bind=engine, autoflush=False, autocommit=False, class_=Session
+)
 
 
 def get_session() -> Generator[Session, None, None]:

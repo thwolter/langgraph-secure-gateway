@@ -15,7 +15,7 @@ from langgraph_secure_gateway.auth.dependencies import AuthContext, get_auth_con
 from langgraph_secure_gateway.auth.models import User
 from langgraph_secure_gateway.auth.security import create_access_token, verify_password
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix='/auth', tags=['auth'])
 
 
 class LoginRequest(BaseModel):
@@ -25,7 +25,7 @@ class LoginRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = 'bearer'
     expires_in: int
 
 
@@ -36,7 +36,7 @@ class MeResponse(BaseModel):
     panels: list[str]
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post('/login', response_model=TokenResponse)
 def login(
     payload: LoginRequest,
     session: Annotated[Session, Depends(get_session)],
@@ -50,9 +50,9 @@ def login(
     user = session.execute(statement).scalar_one_or_none()
 
     if user is None or not user.is_active:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail='Invalid credentials')
     if not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail='Invalid credentials')
 
     panels = [entry.panel_key for entry in user.panel_access]
     token = create_access_token(
@@ -68,7 +68,7 @@ def login(
     )
 
 
-@router.get("/me", response_model=MeResponse)
+@router.get('/me', response_model=MeResponse)
 def me(auth: Annotated[AuthContext, Depends(get_auth_context)]) -> MeResponse:
     return MeResponse(
         user_id=auth.user_id,

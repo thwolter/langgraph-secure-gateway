@@ -16,7 +16,7 @@ from langgraph_secure_gateway.gateway.proxy import router as proxy_router
 def create_gateway_app() -> FastAPI:
     """Create and configure the secure gateway application."""
     app = FastAPI(
-        title="LangGraph Secure Gateway",
+        title='LangGraph Secure Gateway',
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
@@ -26,18 +26,18 @@ def create_gateway_app() -> FastAPI:
         secret_key=settings.admin_session_secret,
     )
 
-    @app.on_event("startup")
+    @app.on_event('startup')
     async def maybe_init_auth_schema() -> None:
         if settings.auth_db_auto_init:
             ensure_auth_schema()
 
-    @app.get("/healthz")
+    @app.get('/healthz')
     async def healthz() -> dict[str, str]:
-        return {"status": "ok"}
+        return {'status': 'ok'}
 
-    @app.get("/admin", include_in_schema=False)
+    @app.get('/admin', include_in_schema=False)
     async def admin_redirect() -> RedirectResponse:
-        return RedirectResponse(url="/admin/", status_code=307)
+        return RedirectResponse(url='/admin/', status_code=307)
 
     mount_admin(app)
     app.include_router(auth_router)
