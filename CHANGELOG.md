@@ -1,3 +1,10 @@
+## 0.3.0 (2026-04-14)
+
+### Feat
+
+- **gateway**: add custom OpenAPI endpoints and update API docs
+- **admin**: improve user management form customization
+
 ## 0.2.0 (2026-04-14)
 
 ### BREAKING CHANGE
