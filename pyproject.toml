@@ -50,6 +50,7 @@ major_version_zero = true
 [dependency-groups]
 dev = [
     "commitizen>=4.13.10",
+    "fastapi[standard]>=0.121.0",
     "isort>=8.0.1",
     "pre-commit>=4.5.1",
     "pyrefly>=0.61.0",

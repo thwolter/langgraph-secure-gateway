@@ -18,10 +18,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(admin): improve user management form customization&#10;&#10;Added custom labels for password fields in user management forms. Improved form arguments and widget configuration for better usability.">
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(gateway): add custom OpenAPI endpoints and update API docs&#10;&#10;Configured OpenAPI schema availability at `/gateway/openapi.json` and API docs at `/gateway/docs`. Updated README to reflect the new endpoints.">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +85,10 @@
     "settings.editor.selected.configurable": "com.intellij.python.pyrefly.PyreflyConfigurable"
   }
 }]]></component>
+  <component name="RecapSpentCounter">
+    <option name="endsOfQuotaMs" value="1776718800000" />
+    <option name="spentUsd" value="0.0159975" />
+  </component>
   <component name="RecapUselessUpdatesCounter">
     <option name="suspendCountdown" value="9" />
   </component>
@@ -104,7 +112,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1776149681510</updated>
-      <workItem from="1776149682593" duration="3056000" />
+      <workItem from="1776149682593" duration="3729000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -154,7 +162,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776152832582</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="feat(gateway): add custom OpenAPI endpoints and update API docs&#10;&#10;Configured OpenAPI schema availability at `/gateway/openapi.json` and API docs at `/gateway/docs`. Updated README to reflect the new endpoints.">
+      <option name="closed" value="true" />
+      <created>1776153374088</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1776153374088</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,6 +182,7 @@
     <MESSAGE value="feat: add pre-commit" />
     <MESSAGE value="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes." />
     <MESSAGE value="feat(admin): improve user management form customization&#10;&#10;Added custom labels for password fields in user management forms. Improved form arguments and widget configuration for better usability." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(admin): improve user management form customization&#10;&#10;Added custom labels for password fields in user management forms. Improved form arguments and widget configuration for better usability." />
+    <MESSAGE value="feat(gateway): add custom OpenAPI endpoints and update API docs&#10;&#10;Configured OpenAPI schema availability at `/gateway/openapi.json` and API docs at `/gateway/docs`. Updated README to reflect the new endpoints." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(gateway): add custom OpenAPI endpoints and update API docs&#10;&#10;Configured OpenAPI schema availability at `/gateway/openapi.json` and API docs at `/gateway/docs`. Updated README to reflect the new endpoints." />
   </component>
 </project>

@@ -19,6 +19,26 @@ uvicorn langgraph_secure_gateway.entrypoints:app --host 0.0.0.0 --port 8000
 
 Set `AUTH_DB_AUTO_INIT=true` to auto-create auth tables on gateway startup.
 
+## Development
+
+Install dev dependencies:
+
+```bash
+uv sync --group dev
+```
+
+Run the gateway in reload mode with FastAPI CLI:
+
+```bash
+uv run --group dev fastapi dev src/langgraph_secure_gateway/entrypoints.py
+```
+
+Useful local routes:
+
+- Gateway docs: `http://127.0.0.1:8000/gateway/docs`
+- Gateway OpenAPI: `http://127.0.0.1:8000/gateway/openapi.json`
+- Health check: `http://127.0.0.1:8000/healthz`
+
 ## API documentation
 
 - Gateway docs (this app): `/gateway/docs`

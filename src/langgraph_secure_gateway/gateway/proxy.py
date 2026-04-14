@@ -50,7 +50,9 @@ def _inject_bearer_security(spec: dict[str, Any]) -> dict[str, Any]:
 
 
 @router.api_route(
-    '/{path:path}', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD']
+    '/{path:path}',
+    methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    include_in_schema=False,
 )
 async def proxy(path: str, request: Request) -> Response:
     user = None
