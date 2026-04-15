@@ -59,6 +59,10 @@ Runtime behavior:
 - Every non-public request must provide `Authorization: Bearer <token>`.
 - The token `sub` is a UUID and must match an active user in DB.
 - Gateway forwards `x-authenticated-user-id` (UUID) and `x-authenticated-user` upstream.
+- Gateway injects identity into selected LangGraph request bodies:
+  - `POST /threads`: sets `metadata.owner` and `metadata.user_id` to token `sub`.
+  - `POST /threads/search` (non-admin): enforces `metadata.owner=<token sub>`.
+  - Run create endpoints (`/runs`, `/runs/stream`, `/runs/wait`, `/threads/{thread_id}/runs*`, `/runs/batch`): sets `config.configurable.user_id=<token sub>`.
 
 ## Reset database (destructive)
 

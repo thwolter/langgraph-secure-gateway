@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 
 import httpx
@@ -29,6 +31,29 @@ PUBLIC_PATHS = {
 router = APIRouter()
 
 
+THREAD_RUN_PATH_RE = re.compile(r'^/threads/[^/]+/runs(?:/(?:stream|wait))?$')
+
+
+def _is_run_create_path(path: str) -> bool:
+    if path in {'/runs', '/runs/stream', '/runs/wait'}:
+        return True
+    return bool(THREAD_RUN_PATH_RE.fullmatch(path))
+
+
+def _inject_run_config_user_id(payload: dict[str, Any], *, user_id: str) -> None:
+    config = payload.get('config')
+    if not isinstance(config, dict):
+        config = {}
+        payload['config'] = config
+
+    configurable = config.get('configurable')
+    if not isinstance(configurable, dict):
+        configurable = {}
+        config['configurable'] = configurable
+
+    configurable['user_id'] = user_id
+
+
 def _inject_bearer_security(spec: dict[str, Any]) -> dict[str, Any]:
     components = spec.setdefault('components', {})
     security_schemes = components.setdefault('securitySchemes', {})
@@ -47,6 +72,60 @@ def _inject_bearer_security(spec: dict[str, Any]) -> dict[str, Any]:
             method_config['security'] = [{'BearerAuth': []}]
 
     return spec
+
+
+def _maybe_rewrite_body_for_identity(
+    *,
+    path: str,
+    method: str,
+    body: bytes,
+    principal: Any | None,
+) -> bytes:
+    if principal is None or method.upper() != 'POST':
+        return body
+
+    if path not in {'/threads', '/threads/search', '/runs/batch'} and not _is_run_create_path(
+        path
+    ):
+        return body
+
+    if not body.strip():
+        payload: Any = {} if path != '/runs/batch' else []
+    else:
+        try:
+            raw_payload = json.loads(body)
+        except json.JSONDecodeError:
+            return body
+        if path == '/runs/batch':
+            if not isinstance(raw_payload, list):
+                return body
+        elif not isinstance(raw_payload, dict):
+            return body
+        payload = raw_payload
+
+    user_id = str(principal.user_id)
+    if path == '/threads':
+        metadata = payload.get('metadata')
+        if not isinstance(metadata, dict):
+            metadata = {}
+        payload['metadata'] = metadata
+        metadata['owner'] = user_id
+        metadata['user_id'] = user_id
+    elif path == '/threads/search':
+        metadata = payload.get('metadata')
+        if not isinstance(metadata, dict):
+            metadata = {}
+        payload['metadata'] = metadata
+        if not principal.user.is_admin:
+            metadata['owner'] = user_id
+    elif path == '/runs/batch':
+        for run in payload:
+            if isinstance(run, dict):
+                _inject_run_config_user_id(run, user_id=user_id)
+    elif _is_run_create_path(path):
+        _inject_run_config_user_id(payload, user_id=user_id)
+
+    return json.dumps(payload, separators=(',', ':')).encode('utf-8')
 
 
 @router.api_route(
@@ -84,6 +163,12 @@ async def proxy(path: str, request: Request) -> Response:
         headers['x-authenticated-user-id'] = str(principal.user_id)
 
     body = await request.body()
+    body = _maybe_rewrite_body_for_identity(
+        path=request.url.path,
+        method=request.method,
+        body=body,
+        principal=principal,
+    )
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         upstream_response = await client.request(
