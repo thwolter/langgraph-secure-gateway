@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from uuid import UUID
+
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
 from sqlalchemy import select
@@ -39,7 +41,7 @@ class AdminAuth(AuthenticationBackend):
         request.session.update(
             {
                 'token': f'admin:{user.id}',
-                'admin_user_id': user.id,
+                'admin_user_id': str(user.id),
                 'admin_username': user.username,
             }
         )
@@ -54,8 +56,14 @@ class AdminAuth(AuthenticationBackend):
         if user_id is None:
             return RedirectResponse(url='/admin/login', status_code=302)
 
+        try:
+            user_uuid = UUID(str(user_id))
+        except (TypeError, ValueError):
+            request.session.clear()
+            return RedirectResponse(url='/admin/login', status_code=302)
+
         with SessionLocal() as session:
-            user = session.get(User, int(user_id))
+            user = session.get(User, user_uuid)
             if user is None or not user.is_active or not user.is_admin:
                 request.session.clear()
                 return RedirectResponse(url='/admin/login', status_code=302)
@@ -86,7 +94,13 @@ class UserAdmin(ModelView, model=User):
     column_details_exclude_list = [User.password_hash]
     column_labels = {User.password_hash: 'Password'}
 
-    form_columns = [User.username, User.password_hash, User.is_active, User.is_admin]
+    form_columns = [
+        User.id,
+        User.username,
+        User.password_hash,
+        User.is_active,
+        User.is_admin,
+    ]
     form_args = {
         'password_hash': {
             'label': 'Password',

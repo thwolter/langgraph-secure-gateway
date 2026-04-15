@@ -55,13 +55,13 @@ def _inject_bearer_security(spec: dict[str, Any]) -> dict[str, Any]:
     include_in_schema=False,
 )
 async def proxy(path: str, request: Request) -> Response:
-    user = None
+    principal = None
     if request.url.path not in PUBLIC_PATHS and not request.url.path.startswith(
         '/admin'
     ):
         try:
             with SessionLocal() as session:
-                user = authenticate_bearer_from_headers(
+                principal = authenticate_bearer_from_headers(
                     request.headers, session=session
                 )
         except AuthError as exc:
@@ -79,9 +79,9 @@ async def proxy(path: str, request: Request) -> Response:
         for key, value in request.headers.items()
         if key.lower() not in {'host', 'content-length'}
     }
-    if user is not None:
-        headers['x-authenticated-user'] = user.username
-        headers['x-authenticated-user-id'] = str(user.id)
+    if principal is not None:
+        headers['x-authenticated-user'] = principal.username
+        headers['x-authenticated-user-id'] = str(principal.user_id)
 
     body = await request.body()
 

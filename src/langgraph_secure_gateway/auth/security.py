@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from typing import Any
+from uuid import UUID
 
 import jwt
 from passlib.context import CryptContext
@@ -24,7 +25,7 @@ def hash_password(password: str) -> str:
 
 
 def create_access_token(
-    *, user_id: int, username: str, is_admin: bool, panels: list[str]
+    *, user_id: UUID, username: str, is_admin: bool, panels: list[str]
 ) -> str:
     """Create a signed JWT access token for a specific user."""
     now = datetime.now(tz=UTC)

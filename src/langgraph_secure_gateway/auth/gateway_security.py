@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping
+from uuid import UUID
 
 import jwt
 
@@ -17,6 +18,13 @@ class AuthError(Exception):
 
     status_code: int
     detail: str
+
+
+@dataclass(frozen=True)
+class AuthenticatedPrincipal:
+    user_id: UUID
+    username: str
+    user: User
 
 
 def _to_text(value: Any) -> str | None:
@@ -57,7 +65,7 @@ def extract_bearer_token(headers: Mapping[Any, Any]) -> str | None:
 
 def authenticate_bearer_from_headers(
     headers: Mapping[Any, Any], *, session: Any
-) -> User:
+) -> AuthenticatedPrincipal:
     token = extract_bearer_token(headers)
     if not token:
         raise AuthError(status_code=401, detail='Missing bearer token')
@@ -68,11 +76,12 @@ def authenticate_bearer_from_headers(
         raise AuthError(status_code=401, detail='Invalid or expired token') from exc
 
     subject = payload.get('sub')
-    if subject is None:
+    username = payload.get('username')
+    if subject is None or username is None:
         raise AuthError(status_code=401, detail='Token payload is missing subject')
 
     try:
-        user_id = int(subject)
+        user_id = UUID(str(subject))
     except (TypeError, ValueError) as exc:
         raise AuthError(status_code=401, detail='Token subject is invalid') from exc
 
@@ -80,4 +89,8 @@ def authenticate_bearer_from_headers(
     if user is None or not user.is_active:
         raise AuthError(status_code=401, detail='User is inactive or missing')
 
-    return user
+    return AuthenticatedPrincipal(
+        user_id=user_id,
+        username=str(username),
+        user=user,
+    )

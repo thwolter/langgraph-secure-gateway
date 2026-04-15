@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from langgraph_secure_gateway.auth.config import settings
@@ -37,3 +37,11 @@ def get_session() -> Generator[Session, None, None]:
 def ensure_auth_schema() -> None:
     """Create auth tables if they do not exist yet."""
     Base.metadata.create_all(bind=engine)
+
+
+def reset_auth_schema() -> None:
+    """Drop and recreate the Postgres public schema, then recreate auth tables."""
+    with engine.begin() as connection:
+        connection.execute(text('DROP SCHEMA IF EXISTS public CASCADE'))
+        connection.execute(text('CREATE SCHEMA public'))
+    ensure_auth_schema()

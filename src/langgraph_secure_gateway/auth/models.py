@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID, uuid4
 
 from sqlalchemy import (
     Boolean,
@@ -11,6 +12,7 @@ from sqlalchemy import (
     Integer,
     String,
     UniqueConstraint,
+    Uuid,
     func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -25,7 +27,7 @@ class User(Base):
 
     __tablename__ = 'users'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[UUID] = mapped_column(Uuid(), primary_key=True, default=uuid4)
     username: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -55,8 +57,11 @@ class PanelAccess(Base):
     __table_args__ = (UniqueConstraint('user_id', 'panel_key', name='uq_user_panel'),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True
+    user_id: Mapped[UUID] = mapped_column(
+        Uuid(),
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True,
     )
     panel_key: Mapped[str] = mapped_column(String(128), nullable=False)
     created_at: Mapped[datetime] = mapped_column(

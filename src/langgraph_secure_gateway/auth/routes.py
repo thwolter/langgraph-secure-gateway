@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -30,7 +31,7 @@ class TokenResponse(BaseModel):
 
 
 class MeResponse(BaseModel):
-    user_id: int
+    user_id: UUID
     username: str
     is_admin: bool
     panels: list[str]

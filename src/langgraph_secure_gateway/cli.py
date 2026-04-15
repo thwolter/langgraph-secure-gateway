@@ -8,7 +8,7 @@ from pathlib import Path
 
 import typer
 
-from langgraph_secure_gateway.auth.db import ensure_auth_schema
+from langgraph_secure_gateway.auth.db import ensure_auth_schema, reset_auth_schema
 from langgraph_secure_gateway.auth_cli import create_or_update_admin_user
 from langgraph_secure_gateway.templates import (
     COMPOSE_TEMPLATE,
@@ -75,6 +75,22 @@ def init_db() -> None:
     """Create auth schema tables in Postgres if they do not exist."""
     ensure_auth_schema()
     typer.echo('Auth schema ensured.')
+
+
+@app.command('reset-db')
+def reset_db(
+    yes: bool = typer.Option(
+        False,
+        '--yes',
+        help='Confirm destructive reset (drops and recreates Postgres public schema).',
+    ),
+) -> None:
+    """Reset auth database schema (destructive)."""
+    if not yes:
+        typer.echo('Refusing to reset database without --yes.')
+        raise typer.Exit(code=1)
+    reset_auth_schema()
+    typer.echo('Auth schema reset complete.')
 
 
 @app.command('init-deploy')

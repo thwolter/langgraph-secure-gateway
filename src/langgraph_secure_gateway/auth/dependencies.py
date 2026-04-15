@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Annotated
+from uuid import UUID
 
 import jwt
 from fastapi import Depends, Header, HTTPException, status
@@ -18,7 +19,7 @@ from langgraph_secure_gateway.auth.security import decode_access_token
 class AuthContext:
     """Decoded and normalized user context from JWT payload."""
 
-    user_id: int
+    user_id: UUID
     username: str
     is_admin: bool
     panels: tuple[str, ...]
@@ -56,8 +57,13 @@ def get_auth_context(
     if not isinstance(panels, list):
         panels = []
 
+    try:
+        user_id = UUID(str(sub))
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=401, detail='Token subject is invalid') from exc
+
     return AuthContext(
-        user_id=int(sub),
+        user_id=user_id,
         username=str(username),
         is_admin=bool(payload.get('is_admin', False)),
         panels=tuple(str(panel) for panel in panels),
