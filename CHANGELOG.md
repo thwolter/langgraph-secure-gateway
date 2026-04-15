@@ -1,3 +1,14 @@
+## 0.4.0 (2026-04-15)
+
+### BREAKING CHANGE
+
+- User IDs are now UUIDs, affecting database schema, API responses, and JWT payload structure. Use `reset-db` to migrate.
+
+### Feat
+
+- **auth**: migrate user IDs to UUIDs and update related logic
+- **deps**: update dependencies and enhance compatibility
+
 ## 0.3.0 (2026-04-14)
 
 ### Feat
