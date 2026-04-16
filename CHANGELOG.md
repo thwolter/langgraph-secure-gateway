@@ -1,3 +1,9 @@
+## 0.5.0 (2026-04-16)
+
+### Feat
+
+- **gateway**: add identity injection into request payloads
+
 ## 0.4.0 (2026-04-15)
 
 ### BREAKING CHANGE
