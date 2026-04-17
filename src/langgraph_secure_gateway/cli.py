@@ -14,6 +14,7 @@ from langgraph_secure_gateway.templates import (
     COMPOSE_TEMPLATE,
     DOCKERFILE_TEMPLATE,
     ENV_EXAMPLE_TEMPLATE,
+    LANGGRAPH_AUTH_TEMPLATE,
     write_if_missing,
 )
 
@@ -112,6 +113,7 @@ def init_deploy(
     compose_path = target / 'docker-compose.yaml'
     env_example_path = target / '.env.example'
     dockerfile_path = target / 'Dockerfile'
+    auth_path = target / 'auth.py'
 
     wrote_compose = write_if_missing(
         compose_path,
@@ -124,14 +126,26 @@ def init_deploy(
         wrote_dockerfile = write_if_missing(
             dockerfile_path, DOCKERFILE_TEMPLATE, force=force
         )
+    wrote_auth = write_if_missing(auth_path, LANGGRAPH_AUTH_TEMPLATE, force=force)
 
     langgraph_config_path = target / 'langgraph.json'
     if langgraph_config_path.exists():
         data = json.loads(langgraph_config_path.read_text(encoding='utf-8'))
+        changed = False
         dependencies = data.get('dependencies') or []
         if security_dependency not in dependencies:
             dependencies.append(security_dependency)
             data['dependencies'] = dependencies
+            changed = True
+        auth = data.get('auth')
+        if not isinstance(auth, dict):
+            auth = {}
+            data['auth'] = auth
+            changed = True
+        if auth.get('path') != './auth.py:my_auth':
+            auth['path'] = './auth.py:my_auth'
+            changed = True
+        if changed:
             langgraph_config_path.write_text(
                 json.dumps(data, indent=2) + '\n', encoding='utf-8'
             )
@@ -141,6 +155,7 @@ def init_deploy(
         (compose_path, wrote_compose),
         (env_example_path, wrote_env),
         (dockerfile_path, wrote_dockerfile if include_dockerfile else False),
+        (auth_path, wrote_auth),
     ]:
         if include_dockerfile or path != dockerfile_path:
             status = 'created' if wrote else 'skipped'

@@ -41,6 +41,21 @@ Compatibility shim (legacy script-style invocation):
 uv run python scripts/create_admin_user.py --username admin --password 'change-me'
 ```
 
+`init-deploy` now also:
+
+- creates `auth.py` (LangGraph `Auth` handlers wired as `my_auth`)
+- updates `langgraph.json` to include:
+
+```json
+{
+  "auth": {
+    "path": "./auth.py:my_auth"
+  }
+}
+```
+
+If `langgraph.json` already exists, the `auth.path` value is set/updated and existing keys are preserved.
+
 ## Gateway entrypoint
 
 Run with uvicorn:
@@ -80,6 +95,22 @@ Useful local routes:
 - Gateway docs: `http://127.0.0.1:8000/gateway/docs`
 - Gateway OpenAPI: `http://127.0.0.1:8000/gateway/openapi.json`
 - Health check: `http://127.0.0.1:8000/healthz`
+
+## LangGraph auth.py wiring
+
+To use LangGraph SDK auth handlers in your deployment, ensure `langgraph.json` includes:
+
+```json
+{
+  "auth": {
+    "path": "./auth.py:my_auth"
+  }
+}
+```
+
+`my_auth` must be an `Auth()` instance exported from `auth.py`.
+
+When using `secure-langgraph init-deploy`, this file/path wiring is done automatically.
 
 ## JWT identity
 

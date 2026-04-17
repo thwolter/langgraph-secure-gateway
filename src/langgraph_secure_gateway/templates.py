@@ -102,6 +102,57 @@ RUN uv pip uninstall --system pip setuptools wheel && rm /usr/bin/uv /usr/bin/uv
 WORKDIR /deps/app
 """
 
+LANGGRAPH_AUTH_TEMPLATE = """\"\"\"LangGraph auth handlers that trust the upstream gateway headers.\"\"\"
+
+from __future__ import annotations
+
+from typing import Any
+
+from langgraph_sdk import Auth
+
+my_auth = Auth()
+
+
+def _get_text_header(headers: dict[bytes, bytes], name: str) -> str | None:
+    value = headers.get(name.encode('utf-8'))
+    if value is None:
+        return None
+    if isinstance(value, bytes):
+        text = value.decode('utf-8').strip()
+    else:
+        text = str(value).strip()
+    return text or None
+
+
+@my_auth.authenticate
+async def authenticate(headers: dict[bytes, bytes]) -> Auth.types.MinimalUserDict:
+    \"\"\"Authenticate a request based on gateway-injected identity headers.\"\"\"
+    user_id = _get_text_header(headers, 'x-authenticated-user-id')
+    username = _get_text_header(headers, 'x-authenticated-user')
+    if user_id is None:
+        raise Auth.exceptions.HTTPException(
+            status_code=401,
+            detail='Missing authenticated identity headers',
+        )
+
+    user: Auth.types.MinimalUserDict = {'identity': user_id, 'is_authenticated': True}
+    if username is not None:
+        user['display_name'] = username
+    return user
+
+
+@my_auth.on
+async def enforce_owner_scope(
+    ctx: Auth.types.AuthContext, value: dict[str, Any]
+) -> Auth.types.FilterType:
+    \"\"\"Persist owner metadata and restrict access to owner-scoped resources.\"\"\"
+    filters = {'owner': ctx.user.identity}
+    metadata = value.setdefault('metadata', {})
+    if isinstance(metadata, dict):
+        metadata.update(filters)
+    return filters
+"""
+
 
 def write_if_missing(path: Path, content: str, *, force: bool) -> bool:
     """Write file if missing or force is enabled."""
