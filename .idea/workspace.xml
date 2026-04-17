@@ -18,14 +18,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(gateway): add identity injection into request payloads&#10;&#10;Added logic to inject user identity into specific LangGraph request bodies for better user-based data scoping." />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="chore(idea): add IntelliJ IDEA project configuration files">
+      <change beforePath="$PROJECT_DIR$/.idea/langgraph-secure-gateway.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/langgraph-secure-gateway.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="35" />
+    <option name="cachedIndexableFilesCount" value="36" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -66,6 +73,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/thomas/PycharmProjects/langgraph-secure-gateway&quot;,
@@ -105,6 +113,8 @@
       <option name="presentableId" value="Default" />
       <updated>1776149681510</updated>
       <workItem from="1776149682593" duration="13023000" />
+      <workItem from="1776330104967" duration="46000" />
+      <workItem from="1776331434226" duration="2117000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -194,7 +204,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776233431650</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="chore(idea): add IntelliJ IDEA project configuration files">
+      <option name="closed" value="true" />
+      <created>1776330140814</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1776330140814</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -210,6 +228,7 @@
     <MESSAGE value="feat(deps): update dependencies and enhance compatibility&#10;&#10;Added `dnspython` and `email-validator` to dependencies for improved email validation support. Updated `uv.lock` with resolution markers for Python 3.13+ compatibility. Enhanced optional `fastapi` feature set with additional dependencies." />
     <MESSAGE value="feat(auth): migrate user IDs to UUIDs and update related logic&#10;&#10;Replaced integer-based user IDs with UUIDs across the authentication module. Updated database models, API responses, JWT payloads, and headers to use UUIDs. Added a destructive `reset-db` CLI command for schema-breaking changes.&#10;&#10;BREAKING CHANGE: User IDs are now UUIDs, affecting database schema, API responses, and JWT payload structure. Use `reset-db` to migrate." />
     <MESSAGE value="feat(gateway): add identity injection into request payloads&#10;&#10;Added logic to inject user identity into specific LangGraph request bodies for better user-based data scoping." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(gateway): add identity injection into request payloads&#10;&#10;Added logic to inject user identity into specific LangGraph request bodies for better user-based data scoping." />
+    <MESSAGE value="chore(idea): add IntelliJ IDEA project configuration files" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore(idea): add IntelliJ IDEA project configuration files" />
   </component>
 </project>

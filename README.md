@@ -10,6 +10,37 @@ Reusable security gateway package for LangGraph applications.
 - `secure-langgraph init-db`: create auth tables in Postgres
 - `secure-langgraph reset-db`: drop and recreate auth schema (destructive)
 
+List available commands:
+
+```bash
+uv run secure-langgraph --help
+```
+
+Common command usage:
+
+```bash
+# Build LangGraph image with secure defaults
+uv run secure-langgraph build --tag langgraph-app
+
+# Scaffold deploy files in the current project
+uv run secure-langgraph init-deploy --cwd . --image-tag langgraph-app
+
+# Initialize auth schema tables
+uv run secure-langgraph init-db
+
+# Create or rotate admin credentials
+uv run secure-langgraph create-admin-user --username admin --password 'change-me'
+
+# Reset DB schema (destructive)
+uv run secure-langgraph reset-db --yes
+```
+
+Compatibility shim (legacy script-style invocation):
+
+```bash
+uv run python scripts/create_admin_user.py --username admin --password 'change-me'
+```
+
 ## Gateway entrypoint
 
 Run with uvicorn:
@@ -32,6 +63,16 @@ Run the gateway in reload mode with FastAPI CLI:
 
 ```bash
 uv run --group dev fastapi dev src/langgraph_secure_gateway/entrypoints.py
+```
+
+Code quality commands:
+
+```bash
+uv run --group dev ruff check .
+uv run --group dev ruff format .
+uv run --group dev isort .
+uv run --group dev ssort --check src scripts
+uv run --group dev pyrefly check src
 ```
 
 Useful local routes:
