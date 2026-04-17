@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from typing import Any
 
@@ -29,6 +30,7 @@ PUBLIC_PATHS = {
 }
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 THREAD_RUN_PATH_RE = re.compile(r'^/threads/[^/]+/runs(?:/(?:stream|wait))?$')
@@ -52,6 +54,68 @@ def _inject_run_config_user_id(payload: dict[str, Any], *, user_id: str) -> None
         config['configurable'] = configurable
 
     configurable['user_id'] = user_id
+
+
+class BodyRewriteError(Exception):
+    def __init__(self, *, status_code: int, detail: str) -> None:
+        self.status_code = status_code
+        self.detail = detail
+        super().__init__(detail)
+
+
+def _has_configurable_user_id(payload: dict[str, Any], *, user_id: str) -> bool:
+    config = payload.get('config')
+    if not isinstance(config, dict):
+        return False
+    configurable = config.get('configurable')
+    if not isinstance(configurable, dict):
+        return False
+    return configurable.get('user_id') == user_id
+
+
+def _assert_run_payload_identity(
+    *,
+    path: str,
+    payload: Any,
+    user_id: str,
+) -> None:
+    if path == '/runs/batch':
+        if not isinstance(payload, list):
+            raise BodyRewriteError(
+                status_code=400,
+                detail='Request body for /runs/batch must be a JSON array',
+            )
+        for index, run in enumerate(payload):
+            if not isinstance(run, dict):
+                raise BodyRewriteError(
+                    status_code=400,
+                    detail=f'Run at index {index} must be a JSON object',
+                )
+            if not _has_configurable_user_id(run, user_id=user_id):
+                logger.warning(
+                    'Authenticated run batch payload missing canonical user_id after rewrite',
+                    extra={'path': path, 'run_index': index},
+                )
+                raise BodyRewriteError(
+                    status_code=400,
+                    detail='Run payload missing required config.configurable.user_id',
+                )
+        return
+
+    if not isinstance(payload, dict):
+        raise BodyRewriteError(
+            status_code=400,
+            detail='Run request body must be a JSON object',
+        )
+    if not _has_configurable_user_id(payload, user_id=user_id):
+        logger.warning(
+            'Authenticated run payload missing canonical user_id after rewrite',
+            extra={'path': path},
+        )
+        raise BodyRewriteError(
+            status_code=400,
+            detail='Run payload missing required config.configurable.user_id',
+        )
 
 
 def _inject_bearer_security(spec: dict[str, Any]) -> dict[str, Any]:
@@ -89,17 +153,32 @@ def _maybe_rewrite_body_for_identity(
     ):
         return body
 
+    run_path = path == '/runs/batch' or _is_run_create_path(path)
+
     if not body.strip():
         payload: Any = {} if path != '/runs/batch' else []
     else:
         try:
             raw_payload = json.loads(body)
         except json.JSONDecodeError:
+            if run_path:
+                raise BodyRewriteError(
+                    status_code=400,
+                    detail='Run request body must be valid JSON',
+                )
             return body
         if path == '/runs/batch':
             if not isinstance(raw_payload, list):
-                return body
+                raise BodyRewriteError(
+                    status_code=400,
+                    detail='Request body for /runs/batch must be a JSON array',
+                )
         elif not isinstance(raw_payload, dict):
+            if run_path:
+                raise BodyRewriteError(
+                    status_code=400,
+                    detail='Run request body must be a JSON object',
+                )
             return body
         payload = raw_payload
 
@@ -110,7 +189,6 @@ def _maybe_rewrite_body_for_identity(
             metadata = {}
         payload['metadata'] = metadata
         metadata['owner'] = user_id
-        metadata['user_id'] = user_id
     elif path == '/threads/search':
         metadata = payload.get('metadata')
         if not isinstance(metadata, dict):
@@ -124,6 +202,9 @@ def _maybe_rewrite_body_for_identity(
                 _inject_run_config_user_id(run, user_id=user_id)
     elif _is_run_create_path(path):
         _inject_run_config_user_id(payload, user_id=user_id)
+
+    if run_path:
+        _assert_run_payload_identity(path=path, payload=payload, user_id=user_id)
 
     return json.dumps(payload, separators=(',', ':')).encode('utf-8')
 
@@ -163,12 +244,15 @@ async def proxy(path: str, request: Request) -> Response:
         headers['x-authenticated-user-id'] = str(principal.user_id)
 
     body = await request.body()
-    body = _maybe_rewrite_body_for_identity(
-        path=request.url.path,
-        method=request.method,
-        body=body,
-        principal=principal,
-    )
+    try:
+        body = _maybe_rewrite_body_for_identity(
+            path=request.url.path,
+            method=request.method,
+            body=body,
+            principal=principal,
+        )
+    except BodyRewriteError as exc:
+        return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         upstream_response = await client.request(

@@ -101,9 +101,14 @@ Runtime behavior:
 - The token `sub` is a UUID and must match an active user in DB.
 - Gateway forwards `x-authenticated-user-id` (UUID) and `x-authenticated-user` upstream.
 - Gateway injects identity into selected LangGraph request bodies:
-  - `POST /threads`: sets `metadata.owner` and `metadata.user_id` to token `sub`.
+  - `POST /threads`: sets `metadata.owner` to token `sub`.
   - `POST /threads/search` (non-admin): enforces `metadata.owner=<token sub>`.
   - Run create endpoints (`/runs`, `/runs/stream`, `/runs/wait`, `/threads/{thread_id}/runs*`, `/runs/batch`): sets `config.configurable.user_id=<token sub>`.
+- Canonical runtime identity contract (authenticated run-create requests):
+  - Required: `config.configurable.user_id` (UUID string).
+  - `metadata.owner` is used for thread ownership semantics only.
+  - `metadata.user_id` is not written or consumed by the gateway.
+  - Requests with invalid run payload JSON/shape are rejected with `400`.
 
 ## Reset database (destructive)
 
