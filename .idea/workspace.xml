@@ -19,27 +19,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): replace username with email for authentication and user profiles&#10;&#10;Switch authentication logic to use email instead of username across the application. Updated database schema, API routes, and admin functionality to reflect this change. Introduced user profile fields (first name, last name) and email normalization. Added database migration for seamless upgrades.&#10;&#10;BREAKING CHANGE: Authentication now requires email; username is deprecated. Update configurations and scripts to use `--email` instead of `--username`.">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/langgraph-secure-gateway.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/langgraph-secure-gateway.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/dependencies.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/dependencies.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/migrations/versions/20260421_0001_email_login_user_profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/migrations/versions/20260421_0001_email_login_user_profile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/security.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +77,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "stand-alone",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/thomas/PycharmProjects/langgraph-secure-gateway",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

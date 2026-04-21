@@ -60,6 +60,10 @@ docker compose --env-file .env -f docker-compose.yaml up --build
 
 The gateway listens on `http://127.0.0.1:8000` by default.
 
+For Coolify deployments where private LangGraph services share an external
+Docker network, set `GATEWAY_NETWORK_NAME` to the same network name used by the
+LangGraph server compose file. The default is `gateway-net`.
+
 Create the first admin user:
 
 ```bash

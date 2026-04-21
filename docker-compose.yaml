@@ -35,6 +35,14 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+    networks:
+      - default
+      - gateway-net
 
 volumes:
   gateway-postgres:
+
+networks:
+  gateway-net:
+    external: true
+    name: ${GATEWAY_NETWORK_NAME:-gateway-net}
