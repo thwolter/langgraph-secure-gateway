@@ -10,15 +10,11 @@ from sqladmin.authentication import AuthenticationBackend
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import JSONResponse
-from starlette.responses import RedirectResponse, Response
+from starlette.responses import JSONResponse, RedirectResponse, Response
 
 from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal, engine
-from langgraph_secure_gateway.auth.discovery import (
-    discover_langgraph_agents,
-    discover_langgraph_urls,
-)
+from langgraph_secure_gateway.auth.discovery import discover_langgraph_agents
 from langgraph_secure_gateway.auth.models import Agent, User, UserAgentAccess
 from langgraph_secure_gateway.auth.security import verify_password
 
@@ -212,21 +208,6 @@ class AgentAdmin(ModelView, model=Agent):
         if not base_url:
             raise ValueError('Agent base URL is required')
         data['base_url'] = base_url
-
-    @expose('/discovery/urls', methods=['GET'], include_in_schema=False)
-    async def discovery_urls(self, request: Request) -> JSONResponse:
-        urls = await discover_langgraph_urls()
-        return JSONResponse(
-            {
-                'urls': [
-                    {
-                        'url': item.url,
-                        'source': item.source,
-                    }
-                    for item in urls
-                ]
-            }
-        )
 
     @expose('/discovery/agents', methods=['GET'], include_in_schema=False)
     async def discovery_agents(self, request: Request) -> JSONResponse:

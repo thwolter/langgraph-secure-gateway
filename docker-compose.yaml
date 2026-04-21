@@ -31,7 +31,6 @@ services:
       AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
       GATEWAY_UPSTREAM_SECRET: ${GATEWAY_UPSTREAM_SECRET:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
-      LANGGRAPH_DISCOVERY_URLS: ${LANGGRAPH_DISCOVERY_URLS:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
       interval: 10s

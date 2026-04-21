@@ -1,19 +1,26 @@
 <script>
 (() => {
-  const urlSelect = document.querySelector('#network-url-select');
   const agentSelect = document.querySelector('#network-agent-select');
+  const agentSelectRow = document.querySelector('[data-agent-discovery]');
   const baseUrlInput = document.querySelector('[name="base_url"]');
   const assistantInput = document.querySelector('[name="assistant_id"]');
   const graphInput = document.querySelector('[name="graph_id"]');
   const nameInput = document.querySelector('[name="name"]');
   const keyInput = document.querySelector('[name="key"]');
 
-  if (!urlSelect || !agentSelect || !baseUrlInput) {
+  if (!agentSelect || !baseUrlInput) {
     return;
   }
 
-  const urlsEndpoint = "{{ url_for('admin:view-agent-discovery_urls') }}";
   const agentsEndpoint = "{{ url_for('admin:view-agent-discovery_agents') }}";
+  let loadTimer;
+
+  if (agentSelectRow) {
+    const baseUrlRow = baseUrlInput.closest('.form-group, .mb-3, .row');
+    if (baseUrlRow && baseUrlRow.parentNode) {
+      baseUrlRow.insertAdjacentElement('afterend', agentSelectRow);
+    }
+  }
 
   function setOptions(select, options) {
     select.replaceChildren(...options);
@@ -39,40 +46,18 @@
     return parts.join(' / ');
   }
 
-  async function loadUrls() {
-    setOptions(urlSelect, [option('Loading...')]);
-    try {
-      const response = await fetch(urlsEndpoint, { headers: { Accept: 'application/json' } });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const payload = await response.json();
-      const urls = Array.isArray(payload.urls) ? payload.urls : [];
-      const options = [option('Select a URL')];
-      for (const item of urls) {
-        options.push(option(item.url, item.url));
-      }
-      if (baseUrlInput.value && !urls.some((item) => item.url === baseUrlInput.value)) {
-        options.push(option(baseUrlInput.value, baseUrlInput.value));
-      }
-      if (options.length === 1) {
-        options[0].textContent = 'No URLs found';
-      }
-      setOptions(urlSelect, options);
-      if (baseUrlInput.value) {
-        urlSelect.value = baseUrlInput.value;
-        await loadAgents(baseUrlInput.value);
-      }
-    } catch {
-      setOptions(urlSelect, [option('Discovery unavailable')]);
-    }
-  }
-
   async function loadAgents(baseUrl) {
+    const normalizedBaseUrl = baseUrl.trim().replace(/\/+$/, '');
+    if (!normalizedBaseUrl) {
+      setOptions(agentSelect, [option('Enter a base URL first')]);
+      agentSelect.disabled = true;
+      return;
+    }
+
     setOptions(agentSelect, [option('Loading...')]);
     agentSelect.disabled = true;
     try {
-      const params = new URLSearchParams({ base_url: baseUrl });
+      const params = new URLSearchParams({ base_url: normalizedBaseUrl });
       const response = await fetch(`${agentsEndpoint}?${params}`, {
         headers: { Accept: 'application/json' },
       });
@@ -96,16 +81,16 @@
     }
   }
 
-  urlSelect.addEventListener('change', async () => {
-    const baseUrl = urlSelect.value;
-    baseUrlInput.value = baseUrl;
-    if (!baseUrl) {
-      setOptions(agentSelect, [option('Select a URL first')]);
-      agentSelect.disabled = true;
-      return;
-    }
-    await loadAgents(baseUrl);
-  });
+  function queueAgentLoad() {
+    clearTimeout(loadTimer);
+    loadTimer = setTimeout(() => {
+      loadAgents(baseUrlInput.value);
+    }, 350);
+  }
+
+  baseUrlInput.addEventListener('input', queueAgentLoad);
+  baseUrlInput.addEventListener('change', queueAgentLoad);
+  baseUrlInput.addEventListener('blur', () => loadAgents(baseUrlInput.value));
 
   agentSelect.addEventListener('change', () => {
     if (!agentSelect.value) {
@@ -126,6 +111,6 @@
     }
   });
 
-  loadUrls();
+  loadAgents(baseUrlInput.value);
 })();
 </script>

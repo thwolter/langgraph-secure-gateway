@@ -18,7 +18,6 @@ class AuthSettings(BaseSettings):
     cors_origins: str = ''
     auth_db_auto_migrate: bool = False
     gateway_upstream_secret: str = ''
-    langgraph_discovery_urls: str = ''
     langgraph_discovery_timeout_seconds: float = 2.0
 
     model_config = SettingsConfigDict(

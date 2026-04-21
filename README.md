@@ -61,10 +61,8 @@ Set `GATEWAY_UPSTREAM_SECRET` to a random shared secret and use the same value
 on every LangGraph service that uses the generated auth handler. This prevents
 direct callers from spoofing the gateway's identity headers.
 
-The Agent admin form can discover LangGraph APIs from `LANGGRAPH_DISCOVERY_URLS`,
-a comma-separated list of URLs reachable from the gateway container, such as a
-Coolify service URL or another internal HTTP endpoint. Agent `base_url` values
-must also be reachable from the gateway container.
+In the Agent admin form, enter a LangGraph `base_url` that is reachable from the
+gateway container. The form uses that URL to load the available agents.
 
 Create the first admin user:
 
