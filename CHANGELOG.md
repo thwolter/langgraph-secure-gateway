@@ -1,3 +1,16 @@
+## 0.6.0 (2026-04-21)
+
+### BREAKING CHANGE
+
+- Authentication now requires email; username is deprecated. Update configurations and scripts to use `--email` instead of `--username`.
+
+### Feat
+
+- **devops**: add Docker support with Compose for local development
+- **auth**: replace username with email for authentication and user profiles
+- **auth**: add LangGraph `auth.py` handlers and auto-configure `langgraph.json`
+- **gateway**: enforce canonical runtime identity in run payloads
+
 ## 0.5.0 (2026-04-16)
 
 ### Feat
