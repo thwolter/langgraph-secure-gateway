@@ -47,6 +47,10 @@ def create_gateway_app() -> FastAPI:
     async def healthz() -> dict[str, str]:
         return {'status': 'ok'}
 
+    @app.get('/', include_in_schema=False)
+    async def root_redirect() -> RedirectResponse:
+        return RedirectResponse(url='/admin/', status_code=307)
+
     @app.get('/admin', include_in_schema=False)
     async def admin_redirect() -> RedirectResponse:
         return RedirectResponse(url='/admin/', status_code=307)

@@ -18,17 +18,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(devops): enhance Docker Compose for external network support&#10;&#10;Add configurable external network `GATEWAY_NETWORK_NAME` in docker-compose.yaml for seamless integration with shared Docker networks. Updated example.env and README to reflect new setup instructions. Includes minor IntelliJ IDEA configuration updates.">
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): add agent discovery for LangGraph APIs in admin forms&#10;&#10;Introduce agent discovery functionality in admin create/edit forms. Enabled dynamic fetching of LangGraph APIs and agents via HTTP endpoints or Docker inspection. Updated templates, scripts, and admin views to support discovery. Added configuration options for discovery URLs and Docker network setup. Includes documentation updates.&#10;&#10;BREAKING CHANGE: Requires new environment variables for LangGraph discovery. Update `.env` and configuration files accordingly.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +29,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="47" />
+    <option name="cachedIndexableFilesCount" value="52" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -248,7 +241,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776759339676</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="feat(auth): add agent discovery for LangGraph APIs in admin forms&#10;&#10;Introduce agent discovery functionality in admin create/edit forms. Enabled dynamic fetching of LangGraph APIs and agents via HTTP endpoints or Docker inspection. Updated templates, scripts, and admin views to support discovery. Added configuration options for discovery URLs and Docker network setup. Includes documentation updates.&#10;&#10;BREAKING CHANGE: Requires new environment variables for LangGraph discovery. Update `.env` and configuration files accordingly.">
+      <option name="closed" value="true" />
+      <created>1776759901387</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1776759901387</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -279,6 +280,7 @@
     <MESSAGE value="feat(auth): replace username with email for authentication and user profiles&#10;&#10;Switch authentication logic to use email instead of username across the application. Updated database schema, API routes, and admin functionality to reflect this change. Introduced user profile fields (first name, last name) and email normalization. Added database migration for seamless upgrades.&#10;&#10;BREAKING CHANGE: Authentication now requires email; username is deprecated. Update configurations and scripts to use `--email` instead of `--username`." />
     <MESSAGE value="feat(devops): add Docker support with Compose for local development&#10;&#10;Introduce Dockerfile and docker-compose.yaml to streamline local development. Includes Postgres setup with health checks and gateway container configuration. Added .dockerignore and example.env for enhanced usability. Enhanced security with sensitive environment variable management." />
     <MESSAGE value="feat(devops): enhance Docker Compose for external network support&#10;&#10;Add configurable external network `GATEWAY_NETWORK_NAME` in docker-compose.yaml for seamless integration with shared Docker networks. Updated example.env and README to reflect new setup instructions. Includes minor IntelliJ IDEA configuration updates." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(devops): enhance Docker Compose for external network support&#10;&#10;Add configurable external network `GATEWAY_NETWORK_NAME` in docker-compose.yaml for seamless integration with shared Docker networks. Updated example.env and README to reflect new setup instructions. Includes minor IntelliJ IDEA configuration updates." />
+    <MESSAGE value="feat(auth): add agent discovery for LangGraph APIs in admin forms&#10;&#10;Introduce agent discovery functionality in admin create/edit forms. Enabled dynamic fetching of LangGraph APIs and agents via HTTP endpoints or Docker inspection. Updated templates, scripts, and admin views to support discovery. Added configuration options for discovery URLs and Docker network setup. Includes documentation updates.&#10;&#10;BREAKING CHANGE: Requires new environment variables for LangGraph discovery. Update `.env` and configuration files accordingly." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): add agent discovery for LangGraph APIs in admin forms&#10;&#10;Introduce agent discovery functionality in admin create/edit forms. Enabled dynamic fetching of LangGraph APIs and agents via HTTP endpoints or Docker inspection. Updated templates, scripts, and admin views to support discovery. Added configuration options for discovery URLs and Docker network setup. Includes documentation updates.&#10;&#10;BREAKING CHANGE: Requires new environment variables for LangGraph discovery. Update `.env` and configuration files accordingly." />
   </component>
 </project>

@@ -49,20 +49,21 @@ Optional environment variables:
 - `CORS_ORIGINS`: comma-separated browser origins, for example
   `https://app.example.com,http://localhost:5173`
 
-## Docker Deployment
+## Coolify Deployment
 
-Build and run the standalone gateway with Postgres:
+The default `docker-compose.yaml` is Coolify-first. It attaches the gateway to:
 
-```bash
-cp example.env .env
-docker compose --env-file .env -f docker-compose.yaml up --build
-```
+- the default project network for Postgres
+- `gateway-net` for private LangGraph services
+- `coolify` for the Coolify reverse proxy
 
-The gateway listens on `http://127.0.0.1:8000` by default.
+Set `GATEWAY_NETWORK_NAME` to the same external Docker network used by the
+LangGraph server compose file. The default is `gateway-net`. The default Coolify
+proxy network name is `coolify`; override it with `COOLIFY_PROXY_NETWORK_NAME`
+if your Coolify installation uses a different name.
 
-For Coolify deployments where private LangGraph services share an external
-Docker network, set `GATEWAY_NETWORK_NAME` to the same network name used by the
-LangGraph server compose file. The default is `gateway-net`.
+The gateway service exposes container port `8000` to the Coolify proxy network;
+it does not publish a host port in the Coolify compose.
 
 The Agent admin form can discover LangGraph APIs from `LANGGRAPH_DISCOVERY_URLS`,
 a comma-separated list such as `http://langgraph-api:8000`. If the gateway
@@ -81,10 +82,10 @@ docker compose --env-file .env -f docker-compose.yaml exec gateway \
   --password 'change-me'
 ```
 
-Open the admin panel:
+Open the admin panel. The service root redirects here too:
 
 ```text
-http://127.0.0.1:8000/admin/
+https://gateway.example.com/admin/
 ```
 
 In the admin panel:
@@ -95,6 +96,17 @@ In the admin panel:
 3. Create `User Agent Access` grants to assign agents to users.
 
 ## Local Development
+
+Build and run the standalone gateway with Postgres:
+
+```bash
+cp example.env .env
+docker compose --env-file .env -f docker-compose.local.yaml up --build
+```
+
+The local gateway listens on `http://127.0.0.1:8000` by default.
+The local compose creates `gateway-net` instead of requiring it to already
+exist.
 
 Install dependencies:
 
@@ -118,6 +130,7 @@ uv run --group dev fastapi dev src/langgraph_secure_gateway/entrypoints.py
 Useful routes:
 
 - Health check: `GET /healthz`
+- Service root: `GET /` redirects to `/admin/`
 - Gateway docs: `GET /gateway/docs`
 - Admin panel: `GET /admin/`
 
