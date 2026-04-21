@@ -74,7 +74,7 @@ container has access to `/var/run/docker.sock`, it can also inspect
 Create the first admin user:
 
 ```bash
-docker compose --env-file .env -f docker-compose.yaml exec gateway \
+docker compose --env-file .env -f docker-compose.coolify.yaml exec gateway \
   secure-langgraph create-admin-user \
   --email admin@example.com \
   --first-name Admin \
@@ -101,7 +101,7 @@ Build and run the standalone gateway with Postgres:
 
 ```bash
 cp example.env .env
-docker compose --env-file .env -f docker-compose.local.yaml up --build
+docker compose --env-file .env -f docker-compose.yaml up --build
 ```
 
 The local gateway listens on `http://127.0.0.1:8000` by default.
