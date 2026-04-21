@@ -19,11 +19,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${GATEWAY_PORT:-8000}:8000"
-    labels:
-      - "traefik.docker.network=${COOLIFY_PROXY_NETWORK:?Set COOLIFY_PROXY_NETWORK to the gateway resource network name shown by docker ps}"
-    networks:
-      - default
-      - gateway-internal
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,8 +38,3 @@ services:
       retries: 10
 volumes:
   gateway-postgres:
-
-networks:
-  gateway-internal:
-    name: ${GATEWAY_INTERNAL_NETWORK:-gateway-internal}
-    external: true
