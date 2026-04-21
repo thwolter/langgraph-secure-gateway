@@ -17,9 +17,8 @@ class AuthSettings(BaseSettings):
     admin_session_secret: str = 'development-only-admin-session-secret-32'
     cors_origins: str = ''
     auth_db_auto_migrate: bool = False
-    gateway_network_name: str = 'gateway-net'
+    gateway_upstream_secret: str = ''
     langgraph_discovery_urls: str = ''
-    langgraph_discovery_port: int = 8000
     langgraph_discovery_timeout_seconds: float = 2.0
 
     model_config = SettingsConfigDict(

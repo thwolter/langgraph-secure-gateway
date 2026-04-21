@@ -40,6 +40,8 @@ Required environment variables:
 - `POSTGRES_URI`: Postgres connection URI when running without Compose
 - `JWT_SECRET`: signing secret for frontend bearer tokens
 - `ADMIN_SESSION_SECRET`: signing secret for the admin UI session cookie
+- `GATEWAY_UPSTREAM_SECRET`: shared secret sent by the gateway to LangGraph
+  services that use the generated auth handler
 
 Optional environment variables:
 
@@ -51,30 +53,23 @@ Optional environment variables:
 
 ## Coolify Deployment
 
-The default `docker-compose.yaml` is Coolify-first. It attaches the gateway to:
+Deploy the gateway with `docker-compose.yaml`. It uses only the default Compose
+network for the gateway and its Postgres database; it does not require a shared
+external Docker network with LangGraph services.
 
-- the default project network for Postgres
-- `gateway-net` for private LangGraph services
-- `coolify` for the Coolify reverse proxy
-
-Set `GATEWAY_NETWORK_NAME` to the same external Docker network used by the
-LangGraph server compose file. The default is `gateway-net`. The default Coolify
-proxy network name is `coolify`; override it with `COOLIFY_PROXY_NETWORK_NAME`
-if your Coolify installation uses a different name.
-
-The gateway service exposes container port `8000` to the Coolify proxy network;
-it does not publish a host port in the Coolify compose.
+Set `GATEWAY_UPSTREAM_SECRET` to a random shared secret and use the same value
+on every LangGraph service that uses the generated auth handler. This prevents
+direct callers from spoofing the gateway's identity headers.
 
 The Agent admin form can discover LangGraph APIs from `LANGGRAPH_DISCOVERY_URLS`,
-a comma-separated list such as `http://langgraph-api:8000`. If the gateway
-container has access to `/var/run/docker.sock`, it can also inspect
-`GATEWAY_NETWORK_NAME` and list LangGraph containers that respond to
-`/assistants/search`.
+a comma-separated list of URLs reachable from the gateway container, such as a
+Coolify service URL or another internal HTTP endpoint. Agent `base_url` values
+must also be reachable from the gateway container.
 
 Create the first admin user:
 
 ```bash
-docker compose --env-file .env -f docker-compose.coolify.yaml exec gateway \
+docker compose --env-file .env -f docker-compose.yaml exec gateway \
   secure-langgraph create-admin-user \
   --email admin@example.com \
   --first-name Admin \
@@ -105,8 +100,8 @@ docker compose --env-file .env -f docker-compose.yaml up --build
 ```
 
 The local gateway listens on `http://127.0.0.1:8000` by default.
-The local compose creates `gateway-net` instead of requiring it to already
-exist.
+The local compose file uses only the default Compose network for the gateway and
+Postgres.
 
 Install dependencies:
 
@@ -250,15 +245,16 @@ uv run secure-langgraph reset-db --yes
 
 ## LangGraph Auth Handler
 
-If a proxied LangGraph app uses LangGraph SDK auth, configure it to trust the
-gateway's injected identity headers. The deploy helper can generate an `auth.py`
-for LangGraph projects:
+If a proxied LangGraph app uses LangGraph SDK auth, configure it to require the
+gateway's shared upstream secret before trusting injected identity headers. The
+deploy helper can generate an `auth.py` for LangGraph projects:
 
 ```bash
 uv run secure-langgraph init-deploy --cwd /path/to/langgraph-app
 ```
 
-The generated handler expects `x-authenticated-user-id` and uses
+The generated handler expects `x-gateway-upstream-secret` to match
+`GATEWAY_UPSTREAM_SECRET`, then reads `x-authenticated-user-id` and uses
 `x-authenticated-user-email` as the display name when available.
 
 ## Code Quality

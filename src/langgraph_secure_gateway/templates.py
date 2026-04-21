@@ -46,6 +46,7 @@ services:
       POSTGRES_URI: postgres://postgres:postgres@langgraph-postgres:5432/postgres?sslmode=disable
       LANGSMITH_API_KEY: ${{LANGSMITH_API_KEY}}
       OPENAI_API_KEY: ${{OPENAI_API_KEY}}
+      GATEWAY_UPSTREAM_SECRET: ${{GATEWAY_UPSTREAM_SECRET:-}}
   auth-gateway:
     pull_policy: never
     image: \"{image_tag}\"
@@ -64,6 +65,7 @@ services:
       JWT_EXPIRE_MINUTES: ${{JWT_EXPIRE_MINUTES:-60}}
       ADMIN_SESSION_SECRET: ${{ADMIN_SESSION_SECRET}}
       AUTH_DB_AUTO_MIGRATE: ${{AUTH_DB_AUTO_MIGRATE:-true}}
+      GATEWAY_UPSTREAM_SECRET: ${{GATEWAY_UPSTREAM_SECRET:-}}
       CORS_ORIGINS: ${{CORS_ORIGINS:-}}
 """
 
@@ -74,6 +76,7 @@ JWT_ALGORITHM=HS256
 JWT_EXPIRE_MINUTES=60
 ADMIN_SESSION_SECRET=
 AUTH_DB_AUTO_MIGRATE=true
+GATEWAY_UPSTREAM_SECRET=
 CORS_ORIGINS=
 """
 
@@ -107,11 +110,15 @@ LANGGRAPH_AUTH_TEMPLATE = """\"\"\"LangGraph auth handlers that trust the upstre
 
 from __future__ import annotations
 
+import hmac
+import os
 from typing import Any
 
 from langgraph_sdk import Auth
 
 my_auth = Auth()
+
+GATEWAY_UPSTREAM_SECRET = os.environ.get('GATEWAY_UPSTREAM_SECRET', '')
 
 
 def _get_text_header(headers: dict[bytes, bytes], name: str) -> str | None:
@@ -128,6 +135,20 @@ def _get_text_header(headers: dict[bytes, bytes], name: str) -> str | None:
 @my_auth.authenticate
 async def authenticate(headers: dict[bytes, bytes]) -> Auth.types.MinimalUserDict:
     \"\"\"Authenticate a request based on gateway-injected identity headers.\"\"\"
+    received_secret = _get_text_header(headers, 'x-gateway-upstream-secret')
+    if not GATEWAY_UPSTREAM_SECRET:
+        raise Auth.exceptions.HTTPException(
+            status_code=500,
+            detail='Missing GATEWAY_UPSTREAM_SECRET configuration',
+        )
+    if received_secret is None or not hmac.compare_digest(
+        received_secret, GATEWAY_UPSTREAM_SECRET
+    ):
+        raise Auth.exceptions.HTTPException(
+            status_code=401,
+            detail='Invalid gateway credentials',
+        )
+
     user_id = _get_text_header(headers, 'x-authenticated-user-id')
     email = _get_text_header(headers, 'x-authenticated-user-email')
     if user_id is None:

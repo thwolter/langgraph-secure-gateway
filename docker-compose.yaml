@@ -29,22 +29,13 @@ services:
       JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-60}
       ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET}
       AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
+      GATEWAY_UPSTREAM_SECRET: ${GATEWAY_UPSTREAM_SECRET:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
-      GATEWAY_NETWORK_NAME: ${GATEWAY_NETWORK_NAME:-gateway-net}
       LANGGRAPH_DISCOVERY_URLS: ${LANGGRAPH_DISCOVERY_URLS:-}
-      LANGGRAPH_DISCOVERY_PORT: ${LANGGRAPH_DISCOVERY_PORT:-8000}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
       interval: 10s
       timeout: 3s
       retries: 10
-    networks:
-      - default
-      - gateway-net
-
 volumes:
   gateway-postgres:
-
-networks:
-  gateway-net:
-    name: ${GATEWAY_NETWORK_NAME:-gateway-net}

@@ -12,6 +12,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select
 
+from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal
 from langgraph_secure_gateway.auth.gateway_security import (
     AuthenticatedPrincipal,
@@ -267,6 +268,8 @@ async def _proxy_agent_request(
     if principal.user.last_name:
         headers['x-authenticated-user-last-name'] = principal.user.last_name
     headers['x-authenticated-user-id'] = str(principal.user_id)
+    if settings.gateway_upstream_secret:
+        headers['x-gateway-upstream-secret'] = settings.gateway_upstream_secret
 
     body = await request.body()
     try:

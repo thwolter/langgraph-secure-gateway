@@ -18,14 +18,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(devops): add local Docker Compose setup and enhance Coolify integration&#10;&#10;Introduce `docker-compose.local.yaml` for local development with Postgres and gateway services. Enhanced Coolify compatibility by adding `coolify` network support and refining service configurations. Updated README with detailed instructions for both setups." />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(devops): update Docker Compose files and improve Coolify integration&#10;&#10;Renamed `docker-compose.local.yaml` to `docker-compose.coolify.yaml` for improved clarity. Updated service ports and networks in Compose files, reintroducing `coolify` network for compatibility. Adjusted IntelliJ IDEA configuration files and refined README instructions to reflect these updates.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.coolify.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/discovery.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="52" />
+    <option name="cachedIndexableFilesCount" value="53" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -253,7 +265,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776761179726</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="feat(devops): update Docker Compose files and improve Coolify integration&#10;&#10;Renamed `docker-compose.local.yaml` to `docker-compose.coolify.yaml` for improved clarity. Updated service ports and networks in Compose files, reintroducing `coolify` network for compatibility. Adjusted IntelliJ IDEA configuration files and refined README instructions to reflect these updates.">
+      <option name="closed" value="true" />
+      <created>1776761408776</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1776761408776</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -286,6 +306,7 @@
     <MESSAGE value="feat(devops): enhance Docker Compose for external network support&#10;&#10;Add configurable external network `GATEWAY_NETWORK_NAME` in docker-compose.yaml for seamless integration with shared Docker networks. Updated example.env and README to reflect new setup instructions. Includes minor IntelliJ IDEA configuration updates." />
     <MESSAGE value="feat(auth): add agent discovery for LangGraph APIs in admin forms&#10;&#10;Introduce agent discovery functionality in admin create/edit forms. Enabled dynamic fetching of LangGraph APIs and agents via HTTP endpoints or Docker inspection. Updated templates, scripts, and admin views to support discovery. Added configuration options for discovery URLs and Docker network setup. Includes documentation updates.&#10;&#10;BREAKING CHANGE: Requires new environment variables for LangGraph discovery. Update `.env` and configuration files accordingly." />
     <MESSAGE value="feat(devops): add local Docker Compose setup and enhance Coolify integration&#10;&#10;Introduce `docker-compose.local.yaml` for local development with Postgres and gateway services. Enhanced Coolify compatibility by adding `coolify` network support and refining service configurations. Updated README with detailed instructions for both setups." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(devops): add local Docker Compose setup and enhance Coolify integration&#10;&#10;Introduce `docker-compose.local.yaml` for local development with Postgres and gateway services. Enhanced Coolify compatibility by adding `coolify` network support and refining service configurations. Updated README with detailed instructions for both setups." />
+    <MESSAGE value="feat(devops): update Docker Compose files and improve Coolify integration&#10;&#10;Renamed `docker-compose.local.yaml` to `docker-compose.coolify.yaml` for improved clarity. Updated service ports and networks in Compose files, reintroducing `coolify` network for compatibility. Adjusted IntelliJ IDEA configuration files and refined README instructions to reflect these updates." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(devops): update Docker Compose files and improve Coolify integration&#10;&#10;Renamed `docker-compose.local.yaml` to `docker-compose.coolify.yaml` for improved clarity. Updated service ports and networks in Compose files, reintroducing `coolify` network for compatibility. Adjusted IntelliJ IDEA configuration files and refined README instructions to reflect these updates." />
   </component>
 </project>

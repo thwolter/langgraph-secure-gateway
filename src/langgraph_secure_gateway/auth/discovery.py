@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
 
 from langgraph_secure_gateway.auth.config import settings
-
-DOCKER_SOCKET_PATH = Path('/var/run/docker.sock')
 
 
 @dataclass(frozen=True)
@@ -40,72 +37,6 @@ def _configured_urls() -> list[DiscoveredURL]:
     return urls
 
 
-async def _container_aliases(client: httpx.AsyncClient, container_id: str) -> list[str]:
-    try:
-        response = await client.get(f'/containers/{container_id}/json')
-        response.raise_for_status()
-        container_data = response.json()
-    except (httpx.HTTPError, ValueError):
-        return []
-
-    networks = (
-        container_data.get('NetworkSettings', {})
-        .get('Networks', {})
-        .get(settings.gateway_network_name, {})
-    )
-    aliases = networks.get('Aliases')
-    if not isinstance(aliases, list):
-        return []
-    return [str(alias).strip() for alias in aliases if alias]
-
-
-async def _container_url_candidates(
-    client: httpx.AsyncClient, network_data: dict[str, Any]
-) -> list[DiscoveredURL]:
-    containers = network_data.get('Containers')
-    if not isinstance(containers, dict):
-        return []
-
-    urls: list[DiscoveredURL] = []
-    for container_id, container in containers.items():
-        if not isinstance(container, dict):
-            continue
-
-        names: set[str] = set()
-        name = str(container.get('Name') or '').strip().lstrip('/')
-        if name:
-            names.add(name)
-
-        names.update(await _container_aliases(client, str(container_id)))
-
-        for name in sorted(names):
-            urls.append(
-                DiscoveredURL(
-                    url=f'http://{name}:{settings.langgraph_discovery_port}',
-                    source='docker',
-                )
-            )
-
-    return urls
-
-
-async def _docker_network_urls() -> list[DiscoveredURL]:
-    if not DOCKER_SOCKET_PATH.exists():
-        return []
-
-    transport = httpx.AsyncHTTPTransport(uds=str(DOCKER_SOCKET_PATH))
-    async with httpx.AsyncClient(
-        transport=transport,
-        base_url='http://docker',
-        timeout=settings.langgraph_discovery_timeout_seconds,
-    ) as client:
-        response = await client.get(f'/networks/{settings.gateway_network_name}')
-        response.raise_for_status()
-        network_data = response.json()
-
-        return await _container_url_candidates(client, network_data)
-
-
 def _dedupe(urls: list[DiscoveredURL]) -> list[DiscoveredURL]:
     seen: set[str] = set()
     deduped: list[DiscoveredURL] = []
@@ -118,14 +49,9 @@ def _dedupe(urls: list[DiscoveredURL]) -> list[DiscoveredURL]:
 
 
 async def discover_langgraph_urls() -> list[DiscoveredURL]:
-    """Return configured and Docker-network URLs that look like LangGraph APIs."""
+    """Return configured URLs that look like LangGraph APIs."""
 
     urls = _configured_urls()
-    try:
-        urls.extend(await _docker_network_urls())
-    except (httpx.HTTPError, OSError):
-        pass
-
     candidates = _dedupe(urls)
     if not candidates:
         return []

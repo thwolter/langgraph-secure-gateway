@@ -125,7 +125,7 @@ def init_deploy(
 ) -> None:
     """Generate deploy files for a LangGraph project with secure gateway."""
     target = cwd.resolve()
-    compose_path = target / 'docker-compose.coolify.yaml'
+    compose_path = target / 'docker-compose.yaml'
     env_example_path = target / '.env.example'
     dockerfile_path = target / 'Dockerfile'
     auth_path = target / 'auth.py'
