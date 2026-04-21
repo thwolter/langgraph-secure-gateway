@@ -2,6 +2,8 @@
 (() => {
   const agentSelect = document.querySelector('#network-agent-select');
   const agentSelectRow = document.querySelector('[data-agent-discovery]');
+  const tokenInput = document.querySelector('#network-agent-token');
+  const tokenInputRow = document.querySelector('[data-agent-discovery-token]');
   const baseUrlInput = document.querySelector('[name="base_url"]');
   const assistantInput = document.querySelector('[name="assistant_id"]');
   const graphInput = document.querySelector('[name="graph_id"]');
@@ -19,6 +21,9 @@
     const baseUrlRow = baseUrlInput.closest('.form-group, .mb-3, .row');
     if (baseUrlRow && baseUrlRow.parentNode) {
       baseUrlRow.insertAdjacentElement('afterend', agentSelectRow);
+      if (tokenInputRow) {
+        agentSelectRow.insertAdjacentElement('afterend', tokenInputRow);
+      }
     }
   }
 
@@ -46,8 +51,13 @@
     return parts.join(' / ');
   }
 
+  function normalizeBaseUrl(baseUrl) {
+    const trimmed = baseUrl.trim().replace(/\/+$/, '');
+    return trimmed.replace(/\/(docs|redoc|openapi\.json)$/, '');
+  }
+
   async function loadAgents(baseUrl) {
-    const normalizedBaseUrl = baseUrl.trim().replace(/\/+$/, '');
+    const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
     if (!normalizedBaseUrl) {
       setOptions(agentSelect, [option('Enter a base URL first')]);
       agentSelect.disabled = true;
@@ -58,8 +68,13 @@
     agentSelect.disabled = true;
     try {
       const params = new URLSearchParams({ base_url: normalizedBaseUrl });
+      const headers = { Accept: 'application/json' };
+      const token = tokenInput ? tokenInput.value.trim() : '';
+      if (token) {
+        headers['X-Agent-Discovery-Token'] = token;
+      }
       const response = await fetch(`${agentsEndpoint}?${params}`, {
-        headers: { Accept: 'application/json' },
+        headers,
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -91,6 +106,11 @@
   baseUrlInput.addEventListener('input', queueAgentLoad);
   baseUrlInput.addEventListener('change', queueAgentLoad);
   baseUrlInput.addEventListener('blur', () => loadAgents(baseUrlInput.value));
+  if (tokenInput) {
+    tokenInput.addEventListener('input', queueAgentLoad);
+    tokenInput.addEventListener('change', queueAgentLoad);
+    tokenInput.addEventListener('blur', () => loadAgents(baseUrlInput.value));
+  }
 
   agentSelect.addEventListener('change', () => {
     if (!agentSelect.value) {

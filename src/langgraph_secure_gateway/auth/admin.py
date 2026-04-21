@@ -212,8 +212,11 @@ class AgentAdmin(ModelView, model=Agent):
     @expose('/discovery/agents', methods=['GET'], include_in_schema=False)
     async def discovery_agents(self, request: Request) -> JSONResponse:
         base_url = str(request.query_params.get('base_url', ''))
+        bearer_token = request.headers.get('x-agent-discovery-token')
         try:
-            agents = await discover_langgraph_agents(base_url)
+            agents = await discover_langgraph_agents(
+                base_url, bearer_token=bearer_token
+            )
         except Exception as exc:
             return JSONResponse({'detail': str(exc)}, status_code=400)
         return JSONResponse({'agents': agents})

@@ -18,10 +18,36 @@ def _normalize_url(value: str) -> str | None:
     parsed = urlparse(url)
     if parsed.scheme not in {'http', 'https'} or not parsed.netloc:
         return None
+
+    path = parsed.path.rstrip('/')
+    if (
+        path.endswith('/docs')
+        or path.endswith('/redoc')
+        or path.endswith('/openapi.json')
+    ):
+        path = path.rsplit('/', 1)[0]
+        parsed = parsed._replace(path=path, params='', query='', fragment='')
+        url = parsed.geturl().rstrip('/')
+
     return url
 
 
-async def discover_langgraph_agents(base_url: str) -> list[dict[str, Any]]:
+def _authorization_header(bearer_token: str | None) -> str | None:
+    if bearer_token is None:
+        return None
+
+    token = bearer_token.strip()
+    if not token:
+        return None
+
+    if token.lower().startswith('bearer '):
+        return token
+    return f'Bearer {token}'
+
+
+async def discover_langgraph_agents(
+    base_url: str, bearer_token: str | None = None
+) -> list[dict[str, Any]]:
     """Fetch assistants from a selected LangGraph API."""
 
     normalized = _normalize_url(base_url)
@@ -32,6 +58,9 @@ async def discover_langgraph_agents(base_url: str) -> list[dict[str, Any]]:
         timeout=settings.langgraph_discovery_timeout_seconds
     ) as client:
         headers = {}
+        authorization = _authorization_header(bearer_token)
+        if authorization is not None:
+            headers['Authorization'] = authorization
         if settings.gateway_upstream_secret:
             headers['x-gateway-upstream-secret'] = settings.gateway_upstream_secret
             headers['x-authenticated-user-id'] = 'gateway-admin-discovery'

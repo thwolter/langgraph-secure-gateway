@@ -18,15 +18,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): remove Docker-based LangGraph discovery and add upstream secret support&#10;&#10;Removed Docker socket-based LangGraph discovery to simplify deployment. Introduced `GATEWAY_UPSTREAM_SECRET` for secure communication between the gateway and LangGraph services. Updated relevant configurations, headers, templates, and documentation to reflect these changes.">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/discovery.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" afterDir="false" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +27,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="53" />
+    <option name="cachedIndexableFilesCount" value="52" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -278,7 +271,23 @@
       <option name="project" value="LOCAL" />
       <updated>1776762293866</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="feat(auth): remove unused LangGraph discovery and simplify agent form logic&#10;&#10;Removed legacy LangGraph discovery logic, including `LANGGRAPH_DISCOVERY_URLS` support, to streamline the codebase. Updated admin agent form scripts to fetch agents dynamically based on user-provided base URLs. Adjusted templates and configuration files to reflect these changes.">
+      <option name="closed" value="true" />
+      <created>1776762671953</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1776762671953</updated>
+    </task>
+    <task id="LOCAL-00021" summary="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services.">
+      <option name="closed" value="true" />
+      <created>1776762995658</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1776762995658</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -313,6 +322,8 @@
     <MESSAGE value="feat(devops): add local Docker Compose setup and enhance Coolify integration&#10;&#10;Introduce `docker-compose.local.yaml` for local development with Postgres and gateway services. Enhanced Coolify compatibility by adding `coolify` network support and refining service configurations. Updated README with detailed instructions for both setups." />
     <MESSAGE value="feat(devops): update Docker Compose files and improve Coolify integration&#10;&#10;Renamed `docker-compose.local.yaml` to `docker-compose.coolify.yaml` for improved clarity. Updated service ports and networks in Compose files, reintroducing `coolify` network for compatibility. Adjusted IntelliJ IDEA configuration files and refined README instructions to reflect these updates." />
     <MESSAGE value="feat(auth): remove Docker-based LangGraph discovery and add upstream secret support&#10;&#10;Removed Docker socket-based LangGraph discovery to simplify deployment. Introduced `GATEWAY_UPSTREAM_SECRET` for secure communication between the gateway and LangGraph services. Updated relevant configurations, headers, templates, and documentation to reflect these changes." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): remove Docker-based LangGraph discovery and add upstream secret support&#10;&#10;Removed Docker socket-based LangGraph discovery to simplify deployment. Introduced `GATEWAY_UPSTREAM_SECRET` for secure communication between the gateway and LangGraph services. Updated relevant configurations, headers, templates, and documentation to reflect these changes." />
+    <MESSAGE value="feat(auth): remove unused LangGraph discovery and simplify agent form logic&#10;&#10;Removed legacy LangGraph discovery logic, including `LANGGRAPH_DISCOVERY_URLS` support, to streamline the codebase. Updated admin agent form scripts to fetch agents dynamically based on user-provided base URLs. Adjusted templates and configuration files to reflect these changes." />
+    <MESSAGE value="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services." />
   </component>
 </project>
