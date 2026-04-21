@@ -18,11 +18,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): add bearer token support for agent discovery&#10;&#10;Added support for discovery bearer tokens to authenticate requests when fetching LangGraph agents. Updated admin form, templates, and scripts to include token input. Adjusted URL normalization logic to handle docs URLs dynamically. Updated `README` with usage instructions.">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" afterDir="false" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes.">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/docker_compose_coolify_yaml__Compose_Deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Docker_Compose.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,28 +66,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Docker.Docker Container.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/thomas/PycharmProjects/langgraph-secure-gateway&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.python.pyrefly.PyreflyConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.Docker Compose.executor": "Run",
+    "Docker.Docker Container.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/thomas/PycharmProjects/langgraph-secure-gateway",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.intellij.python.pyrefly.PyreflyConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1776718800000" />
     <option name="spentUsd" value="0.0498868" />
@@ -298,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776764725093</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes.">
+      <option name="closed" value="true" />
+      <created>1776764999664</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1776764999664</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -336,6 +343,7 @@
     <MESSAGE value="feat(auth): remove unused LangGraph discovery and simplify agent form logic&#10;&#10;Removed legacy LangGraph discovery logic, including `LANGGRAPH_DISCOVERY_URLS` support, to streamline the codebase. Updated admin agent form scripts to fetch agents dynamically based on user-provided base URLs. Adjusted templates and configuration files to reflect these changes." />
     <MESSAGE value="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services." />
     <MESSAGE value="feat(auth): add bearer token support for agent discovery&#10;&#10;Added support for discovery bearer tokens to authenticate requests when fetching LangGraph agents. Updated admin form, templates, and scripts to include token input. Adjusted URL normalization logic to handle docs URLs dynamically. Updated `README` with usage instructions." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): add bearer token support for agent discovery&#10;&#10;Added support for discovery bearer tokens to authenticate requests when fetching LangGraph agents. Updated admin form, templates, and scripts to include token input. Adjusted URL normalization logic to handle docs URLs dynamically. Updated `README` with usage instructions." />
+    <MESSAGE value="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes." />
   </component>
 </project>

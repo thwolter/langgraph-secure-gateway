@@ -12,7 +12,10 @@
     return;
   }
 
-  const agentsEndpoint = "{{ url_for('admin:view-agent-discovery_agents') }}";
+  const agentsEndpointPath = new URL(
+    "{{ url_for('admin:view-agent-discovery_agents') }}",
+    window.location.href
+  ).pathname;
   let loadTimer;
 
   if (agentSelectRow) {
@@ -63,7 +66,9 @@
     agentSelect.disabled = true;
     try {
       const params = new URLSearchParams({ base_url: normalizedBaseUrl });
-      const response = await fetch(`${agentsEndpoint}?${params}`, {
+      const requestUrl = new URL(agentsEndpointPath, window.location.origin);
+      requestUrl.search = params.toString();
+      const response = await fetch(requestUrl, {
         headers: { Accept: 'application/json' },
       });
       if (!response.ok) {
