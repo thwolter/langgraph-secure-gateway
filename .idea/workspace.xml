@@ -18,13 +18,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" afterDir="false" />
-    </list>
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(ui): add templates for SQLAdmin entity create and edit forms&#10;&#10;Introduced `create.html` and `edit.html` templates for SQLAdmin entities to standardize form layout. Updated `agent_create.html` and `agent_edit.html` to refactor URL handling for consistency. Enhanced the gateway app and service configurations to support forwarded headers in Docker and Uvicorn." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -316,7 +310,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776765894713</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="feat(ui): add templates for SQLAdmin entity create and edit forms&#10;&#10;Introduced `create.html` and `edit.html` templates for SQLAdmin entities to standardize form layout. Updated `agent_create.html` and `agent_edit.html` to refactor URL handling for consistency. Enhanced the gateway app and service configurations to support forwarded headers in Docker and Uvicorn.">
+      <option name="closed" value="true" />
+      <created>1776766322164</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1776766322164</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -356,6 +358,7 @@
     <MESSAGE value="feat(auth): add bearer token support for agent discovery&#10;&#10;Added support for discovery bearer tokens to authenticate requests when fetching LangGraph agents. Updated admin form, templates, and scripts to include token input. Adjusted URL normalization logic to handle docs URLs dynamically. Updated `README` with usage instructions." />
     <MESSAGE value="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes." />
     <MESSAGE value="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability." />
+    <MESSAGE value="feat(ui): add templates for SQLAdmin entity create and edit forms&#10;&#10;Introduced `create.html` and `edit.html` templates for SQLAdmin entities to standardize form layout. Updated `agent_create.html` and `agent_edit.html` to refactor URL handling for consistency. Enhanced the gateway app and service configurations to support forwarded headers in Docker and Uvicorn." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(ui): add templates for SQLAdmin entity create and edit forms&#10;&#10;Introduced `create.html` and `edit.html` templates for SQLAdmin entities to standardize form layout. Updated `agent_create.html` and `agent_edit.html` to refactor URL handling for consistency. Enhanced the gateway app and service configurations to support forwarded headers in Docker and Uvicorn." />
   </component>
 </project>
