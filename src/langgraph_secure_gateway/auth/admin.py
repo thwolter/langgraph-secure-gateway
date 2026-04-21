@@ -1,4 +1,4 @@
-"""SQLAdmin setup for admin-only user and panel management."""
+"""SQLAdmin setup for admin-only user and agent management."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from starlette.responses import RedirectResponse, Response
 
 from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal, engine
-from langgraph_secure_gateway.auth.models import PanelAccess, User
+from langgraph_secure_gateway.auth.models import Agent, User, UserAgentAccess
 from langgraph_secure_gateway.auth.security import verify_password
 
 
@@ -148,27 +148,97 @@ class UserAdmin(ModelView, model=User):
         data['password_hash'] = hash_password(raw_password)
 
 
-class PanelAccessAdmin(ModelView, model=PanelAccess):
-    name = 'Panel Access'
-    name_plural = 'Panel Access'
-    icon = 'fa-solid fa-table-cells'
+class AgentAdmin(ModelView, model=Agent):
+    name = 'Agent'
+    name_plural = 'Agents'
+    icon = 'fa-solid fa-robot'
 
     column_list = [
-        PanelAccess.id,
-        PanelAccess.user_id,
-        PanelAccess.panel_key,
-        PanelAccess.created_at,
+        Agent.id,
+        Agent.key,
+        Agent.name,
+        Agent.base_url,
+        Agent.assistant_id,
+        Agent.graph_id,
+        Agent.is_active,
+        Agent.created_at,
+        Agent.updated_at,
+    ]
+    column_searchable_list = [Agent.key, Agent.name, Agent.base_url]
+    column_sortable_list = [
+        Agent.id,
+        Agent.key,
+        Agent.name,
+        Agent.base_url,
+        Agent.assistant_id,
+        Agent.graph_id,
+        Agent.is_active,
+        Agent.created_at,
+        Agent.updated_at,
+    ]
+    form_columns = [
+        Agent.id,
+        Agent.key,
+        Agent.name,
+        Agent.description,
+        Agent.base_url,
+        Agent.assistant_id,
+        Agent.graph_id,
+        Agent.is_active,
+    ]
+
+    async def on_model_change(
+        self, data, model: Agent, is_created: bool, request: Request
+    ) -> None:
+        key = str(data.get('key', '')).strip()
+        if not key:
+            raise ValueError('Agent key is required')
+        data['key'] = key
+
+        name = str(data.get('name', '')).strip()
+        if not name:
+            raise ValueError('Agent name is required')
+        data['name'] = name
+
+        base_url = str(data.get('base_url', '')).strip().rstrip('/')
+        if not base_url:
+            raise ValueError('Agent base URL is required')
+        data['base_url'] = base_url
+
+
+class UserAgentAccessAdmin(ModelView, model=UserAgentAccess):
+    name = 'User Agent Access'
+    name_plural = 'User Agent Access'
+    icon = 'fa-solid fa-key'
+
+    column_list = [
+        UserAgentAccess.id,
+        UserAgentAccess.user,
+        UserAgentAccess.agent,
+        UserAgentAccess.created_at,
     ]
     column_sortable_list = [
-        PanelAccess.id,
-        PanelAccess.user_id,
-        PanelAccess.panel_key,
-        PanelAccess.created_at,
+        UserAgentAccess.id,
+        UserAgentAccess.user_id,
+        UserAgentAccess.agent_id,
+        UserAgentAccess.created_at,
     ]
-    form_columns = [PanelAccess.user_id, PanelAccess.panel_key]
+    form_columns = [UserAgentAccess.user, UserAgentAccess.agent]
+
+    form_ajax_refs = {
+        'user': {
+            'fields': ('email', 'first_name', 'last_name'),
+            'order_by': 'email',
+        },
+        'agent': {
+            'fields': ('key', 'name'),
+            'order_by': 'name',
+        },
+    }
 
 
 def mount_admin(app) -> None:
     admin = Admin(app, engine, authentication_backend=AdminAuth())
     admin.add_view(UserAdmin)
-    admin.add_view(PanelAccessAdmin)
+    admin.add_view(AgentAdmin)
+    admin.add_view(UserAgentAccessAdmin)

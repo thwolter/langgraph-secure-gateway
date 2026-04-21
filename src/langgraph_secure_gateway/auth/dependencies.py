@@ -20,8 +20,6 @@ class AuthContext:
     """Decoded and normalized user context from JWT payload."""
 
     user_id: UUID
-    is_admin: bool
-    panels: tuple[str, ...]
 
 
 def _extract_bearer_token(authorization: str | None) -> str:
@@ -51,20 +49,12 @@ def get_auth_context(
     if sub is None:
         raise HTTPException(status_code=401, detail='Token payload is missing subject')
 
-    panels = payload.get('panels') or []
-    if not isinstance(panels, list):
-        panels = []
-
     try:
         user_id = UUID(str(sub))
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=401, detail='Token subject is invalid') from exc
 
-    return AuthContext(
-        user_id=user_id,
-        is_admin=bool(payload.get('is_admin', False)),
-        panels=tuple(str(panel) for panel in panels),
-    )
+    return AuthContext(user_id=user_id)
 
 
 def get_current_user(

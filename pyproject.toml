@@ -40,6 +40,9 @@ where = ["src"]
 [tool.ruff.format]
 quote-style = "single"
 
+[tool.isort]
+profile = "black"
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"

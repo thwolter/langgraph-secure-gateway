@@ -21,100 +21,245 @@ Requires-Dist: uvicorn>=0.38.0
 
 # langgraph-secure-gateway
 
-Reusable security gateway package for LangGraph applications.
+Standalone FastAPI backend for authenticating users, managing LangGraph agent
+access, and proxying authorized frontend traffic to private LangGraph services.
 
-## CLI
+The frontend logs in through this gateway. After login, `GET /auth/session`
+returns only the agents available to the authenticated user. Each returned agent
+has a gateway URL plus the configured `assistant_id` and/or `graph_id`.
 
-- `secure-langgraph build`: wrapper around `langgraph build` with safe defaults
-- `secure-langgraph init-deploy`: generate deploy files for a new LangGraph repo
-- `secure-langgraph create-admin-user`: bootstrap or rotate admin credentials
-- `secure-langgraph init-db`: run auth database migrations in Postgres
-- `secure-langgraph reset-db`: drop and recreate auth schema (destructive)
+## Runtime Model
 
-List available commands:
-
-```bash
-uv run secure-langgraph --help
+```text
+frontend
+  |
+  v
+gateway backend
+  |-- Postgres: users, admins, agents, access grants
+  |-- private LangGraph API A
+  |-- private LangGraph API B
+  |-- private LangGraph API C
 ```
 
-Common command usage:
+LangGraph services should not be exposed directly to the browser. The frontend
+uses the gateway-scoped agent URLs returned by `/auth/session`, for example:
+
+```text
+https://gateway.example.com/agents/research-agent
+```
+
+The gateway verifies the bearer token, checks the user's grant for
+`research-agent`, and proxies the request to that agent's configured private
+`base_url`.
+
+## Configuration
+
+Copy `example.env` to `.env` for Docker Compose usage and replace all secrets.
+
+Required environment variables:
+
+- `POSTGRES_URI`: Postgres connection URI when running without Compose
+- `JWT_SECRET`: signing secret for frontend bearer tokens
+- `ADMIN_SESSION_SECRET`: signing secret for the admin UI session cookie
+
+Optional environment variables:
+
+- `JWT_ALGORITHM`: default `HS256`
+- `JWT_EXPIRE_MINUTES`: default `60`
+- `AUTH_DB_AUTO_MIGRATE`: run Alembic migrations on startup, default `false`
+- `CORS_ORIGINS`: comma-separated browser origins, for example
+  `https://app.example.com,http://localhost:5173`
+
+## Docker Deployment
+
+Build and run the standalone gateway with Postgres:
 
 ```bash
-# Build LangGraph image with secure defaults
-uv run secure-langgraph build --tag langgraph-app
+cp example.env .env
+docker compose --env-file .env -f docker-compose.example.yaml up --build
+```
 
-# Scaffold deploy files in the current project
-uv run secure-langgraph init-deploy --cwd . --image-tag langgraph-app
+The gateway listens on `http://127.0.0.1:8000` by default.
 
-# Run auth schema migrations
-uv run secure-langgraph init-db
+Create the first admin user:
 
-# Create or rotate admin credentials
-uv run secure-langgraph create-admin-user \
+```bash
+docker compose --env-file .env -f docker-compose.example.yaml exec gateway \
+  secure-langgraph create-admin-user \
   --email admin@example.com \
   --first-name Admin \
   --last-name User \
   --password 'change-me'
-
-# Reset DB schema (destructive)
-uv run secure-langgraph reset-db --yes
 ```
 
-Compatibility shim (legacy script-style invocation):
+Open the admin panel:
 
-```bash
-uv run python scripts/create_admin_user.py \
-  --email admin@example.com \
-  --first-name Admin \
-  --last-name User \
-  --password 'change-me'
+```text
+http://127.0.0.1:8000/admin/
 ```
 
-`--username` is still accepted as a deprecated alias for `--email` to ease
-upgrades from older deployments.
+In the admin panel:
 
-`init-deploy` now also:
+1. Create users.
+2. Create agents with `key`, `name`, private `base_url`, and optional
+   `assistant_id` or `graph_id`.
+3. Create `User Agent Access` grants to assign agents to users.
 
-- creates `auth.py` (LangGraph `Auth` handlers wired as `my_auth`)
-- updates `langgraph.json` to include:
+## Local Development
 
-```json
-{
-  "auth": {
-    "path": "./auth.py:my_auth"
-  }
-}
-```
-
-If `langgraph.json` already exists, the `auth.path` value is set/updated and existing keys are preserved.
-
-## Gateway entrypoint
-
-Run with uvicorn:
-
-```bash
-uvicorn langgraph_secure_gateway.entrypoints:app --host 0.0.0.0 --port 8000
-```
-
-Set `AUTH_DB_AUTO_MIGRATE=true` to run auth database migrations on gateway
-startup. `AUTH_DB_AUTO_INIT=true` is still recognized as a deprecated
-compatibility fallback when `AUTH_DB_AUTO_MIGRATE` is unset.
-
-## Development
-
-Install dev dependencies:
+Install dependencies:
 
 ```bash
 uv sync --group dev
 ```
 
-Run the gateway in reload mode with FastAPI CLI:
+Run migrations:
+
+```bash
+POSTGRES_URI='postgres://gateway:gateway@localhost:5432/gateway?sslmode=disable' \
+  uv run secure-langgraph init-db
+```
+
+Run the gateway:
 
 ```bash
 uv run --group dev fastapi dev src/langgraph_secure_gateway/entrypoints.py
 ```
 
-Code quality commands:
+Useful routes:
+
+- Health check: `GET /healthz`
+- Gateway docs: `GET /gateway/docs`
+- Admin panel: `GET /admin/`
+
+## Frontend Auth Flow
+
+Login:
+
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "change-me"
+}
+```
+
+Response:
+
+```json
+{
+  "access_token": "jwt",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+Load the authenticated session:
+
+```http
+GET /auth/session
+Authorization: Bearer jwt
+```
+
+Response:
+
+```json
+{
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "email": "user@example.com",
+    "first_name": "User",
+    "last_name": "Example",
+    "is_admin": false
+  },
+  "agents": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "key": "research-agent",
+      "name": "Research Agent",
+      "description": "General research assistant",
+      "url": "https://gateway.example.com/agents/research-agent",
+      "assistant_id": "assistant-id",
+      "graph_id": "agent"
+    }
+  ]
+}
+```
+
+Use the returned `url` for LangGraph calls:
+
+```http
+POST /agents/research-agent/runs/stream
+Authorization: Bearer jwt
+Content-Type: application/json
+
+{
+  "assistant_id": "assistant-id",
+  "input": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello"
+      }
+    ]
+  }
+}
+```
+
+The gateway injects the authenticated UUID into supported LangGraph request
+bodies:
+
+- `POST /agents/{key}/threads`: sets `metadata.owner`
+- `POST /agents/{key}/threads/search`: restricts non-admin users to their owner
+  metadata
+- run create endpoints: sets `config.configurable.user_id`
+
+Forwarded identity headers:
+
+- `x-authenticated-user-id`
+- `x-authenticated-user-email`
+- `x-authenticated-user-first-name`
+- `x-authenticated-user-last-name`
+
+The gateway does not forward the frontend `Authorization` header to upstream
+LangGraph services.
+
+## CLI
+
+List commands:
+
+```bash
+uv run secure-langgraph --help
+```
+
+Common commands:
+
+```bash
+uv run secure-langgraph init-db
+
+uv run secure-langgraph create-admin-user \
+  --email admin@example.com \
+  --password 'change-me'
+
+uv run secure-langgraph reset-db --yes
+```
+
+## LangGraph Auth Handler
+
+If a proxied LangGraph app uses LangGraph SDK auth, configure it to trust the
+gateway's injected identity headers. The deploy helper can generate an `auth.py`
+for LangGraph projects:
+
+```bash
+uv run secure-langgraph init-deploy --cwd /path/to/langgraph-app
+```
+
+The generated handler expects `x-authenticated-user-id` and uses
+`x-authenticated-user-email` as the display name when available.
+
+## Code Quality
 
 ```bash
 uv run --group dev ruff check .
@@ -123,126 +268,3 @@ uv run --group dev isort .
 uv run --group dev ssort --check src scripts
 uv run --group dev pyrefly check src
 ```
-
-Useful local routes:
-
-- Gateway docs: `http://127.0.0.1:8000/gateway/docs`
-- Gateway OpenAPI: `http://127.0.0.1:8000/gateway/openapi.json`
-- Health check: `http://127.0.0.1:8000/healthz`
-
-## LangGraph auth.py wiring
-
-To use LangGraph SDK auth handlers in your deployment, ensure `langgraph.json` includes:
-
-```json
-{
-  "auth": {
-    "path": "./auth.py:my_auth"
-  }
-}
-```
-
-`my_auth` must be an `Auth()` instance exported from `auth.py`.
-
-When using `secure-langgraph init-deploy`, this file/path wiring is done automatically.
-
-## JWT identity
-
-The gateway issues and verifies Bearer JWT tokens locally.
-
-Required environment variables:
-
-- `JWT_SECRET`
-
-Optional environment variables:
-
-- `JWT_ALGORITHM` (default: `HS256`)
-- `JWT_EXPIRE_MINUTES` (default: `60`)
-
-Runtime behavior:
-
-- Clients get a token from `POST /auth/login` with email and password:
-
-```json
-{
-  "email": "admin@example.com",
-  "password": "change-me"
-}
-```
-
-- Login normalizes email by trimming whitespace and lowercasing it.
-- Every non-public request must provide `Authorization: Bearer <token>`.
-- The token `sub` is a UUID and must match an active user in DB.
-- The token does not store email, first name, or last name.
-- Gateway forwards `x-authenticated-user-id` (UUID), `x-authenticated-user`, `x-authenticated-user-email`, `x-authenticated-user-first-name`, and `x-authenticated-user-last-name` upstream when available.
-- Gateway injects identity into selected LangGraph request bodies:
-  - `POST /threads`: sets `metadata.owner` to token `sub`.
-  - `POST /threads/search` (non-admin): enforces `metadata.owner=<token sub>`.
-  - Run create endpoints (`/runs`, `/runs/stream`, `/runs/wait`, `/threads/{thread_id}/runs*`, `/runs/batch`): sets `config.configurable.user_id=<token sub>`.
-- Canonical runtime identity contract (authenticated run-create requests):
-  - Required: `config.configurable.user_id` (UUID string).
-  - `metadata.owner` is used for thread ownership semantics only.
-  - `metadata.user_id` is not written or consumed by the gateway.
-  - Requests with invalid run payload JSON/shape are rejected with `400`.
-
-## Database migrations
-
-The auth database is managed with package-local Alembic migrations. The first
-migration upgrades existing username-based databases by:
-
-- adding `email`, `first_name`, `last_name`, `created_at`, `updated_at`, and
-  `last_login_at` to `users` where missing
-- copying existing `users.username` values into `users.email`
-- making `users.email` non-null and unique
-- leaving the old `users.username` column in place for compatibility
-
-The database does not enforce strict email syntax. New login and admin creation
-paths normalize email input, but existing username values are accepted as email
-values during migration.
-
-Automatic container migration is enabled in newly generated deploy files with:
-
-```yaml
-AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
-```
-
-For an existing `docker-compose.yaml`, update the `auth-gateway.environment`
-section:
-
-```diff
- services:
-   auth-gateway:
-     environment:
--      AUTH_DB_AUTO_INIT: ${AUTH_DB_AUTO_INIT:-true}
-+      AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
-```
-
-If you cannot edit the compose file immediately, `AUTH_DB_AUTO_INIT=true` still
-acts as a compatibility fallback, but new deployments should use
-`AUTH_DB_AUTO_MIGRATE`.
-
-After deploying the new image, the gateway container will run migrations during
-startup once Postgres is healthy. To run the migration manually instead:
-
-```bash
-docker compose run --rm auth-gateway secure-langgraph init-db
-```
-
-## Reset database (destructive)
-
-Use this when rolling out schema-breaking changes (for example, switching user IDs to UUID):
-
-```bash
-uv run secure-langgraph reset-db --yes
-```
-
-Warning: this drops and recreates the entire `public` schema in Postgres.
-
-On Coolify, run the same command inside the gateway service/container where `POSTGRES_URI` is set.
-
-## API documentation
-
-- Gateway docs (this app): `/gateway/docs`
-- Gateway OpenAPI JSON (this app): `/gateway/openapi.json`
-- Upstream LangGraph docs (proxied): `/docs`
-- Upstream OpenAPI JSON (proxied): `/openapi.json`

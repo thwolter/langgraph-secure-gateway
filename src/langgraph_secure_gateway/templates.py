@@ -64,7 +64,7 @@ services:
       JWT_EXPIRE_MINUTES: ${{JWT_EXPIRE_MINUTES:-60}}
       ADMIN_SESSION_SECRET: ${{ADMIN_SESSION_SECRET}}
       AUTH_DB_AUTO_MIGRATE: ${{AUTH_DB_AUTO_MIGRATE:-true}}
-      LANGGRAPH_UPSTREAM_URL: http://langgraph-api:8000
+      CORS_ORIGINS: ${{CORS_ORIGINS:-}}
 """
 
 ENV_EXAMPLE_TEMPLATE = """OPENAI_API_KEY=
@@ -74,6 +74,7 @@ JWT_ALGORITHM=HS256
 JWT_EXPIRE_MINUTES=60
 ADMIN_SESSION_SECRET=
 AUTH_DB_AUTO_MIGRATE=true
+CORS_ORIGINS=
 """
 
 DOCKERFILE_TEMPLATE = """FROM langchain/langgraph-api:3.11-wolfi
@@ -128,7 +129,7 @@ def _get_text_header(headers: dict[bytes, bytes], name: str) -> str | None:
 async def authenticate(headers: dict[bytes, bytes]) -> Auth.types.MinimalUserDict:
     \"\"\"Authenticate a request based on gateway-injected identity headers.\"\"\"
     user_id = _get_text_header(headers, 'x-authenticated-user-id')
-    username = _get_text_header(headers, 'x-authenticated-user')
+    email = _get_text_header(headers, 'x-authenticated-user-email')
     if user_id is None:
         raise Auth.exceptions.HTTPException(
             status_code=401,
@@ -136,8 +137,8 @@ async def authenticate(headers: dict[bytes, bytes]) -> Auth.types.MinimalUserDic
         )
 
     user: Auth.types.MinimalUserDict = {'identity': user_id, 'is_authenticated': True}
-    if username is not None:
-        user['display_name'] = username
+    if email is not None:
+        user['display_name'] = email
     return user
 
 

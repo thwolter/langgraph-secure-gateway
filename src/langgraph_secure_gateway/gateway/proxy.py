@@ -10,24 +10,15 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
+from sqlalchemy import select
 
-from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal
 from langgraph_secure_gateway.auth.gateway_security import (
+    AuthenticatedPrincipal,
     AuthError,
     authenticate_bearer_from_headers,
 )
-
-UPSTREAM_URL = settings.langgraph_upstream_url.rstrip('/')
-
-PUBLIC_PATHS = {
-    '/docs',
-    '/openapi.json',
-    '/docs/oauth2-redirect',
-    '/redoc',
-    '/healthz',
-    '/auth/login',
-}
+from langgraph_secure_gateway.auth.models import Agent, UserAgentAccess
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -211,54 +202,76 @@ def _maybe_rewrite_body_for_identity(
     return json.dumps(payload, separators=(',', ':')).encode('utf-8')
 
 
-@router.api_route(
-    '/{path:path}',
-    methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
-    include_in_schema=False,
-)
-async def proxy(path: str, request: Request) -> Response:
-    principal = None
-    if request.url.path not in PUBLIC_PATHS and not request.url.path.startswith(
-        '/admin'
-    ):
-        try:
-            with SessionLocal() as session:
-                principal = authenticate_bearer_from_headers(
-                    request.headers, session=session
-                )
-        except AuthError as exc:
-            return JSONResponse(
-                status_code=exc.status_code, content={'detail': exc.detail}
-            )
-
-    upstream_url = f'{UPSTREAM_URL}/{path}'
-    query_string = request.url.query
+def _agent_upstream_url(agent: Agent, path: str, query_string: str) -> str:
+    upstream_url = f'{agent.base_url.rstrip("/")}/{path.lstrip("/")}'
     if query_string:
         upstream_url = f'{upstream_url}?{query_string}'
+    return upstream_url
+
+
+def _get_authorized_agent(
+    *,
+    agent_key: str,
+    principal: AuthenticatedPrincipal,
+) -> Agent | Response:
+    with SessionLocal() as session:
+        agent = session.execute(
+            select(Agent).where(Agent.key == agent_key, Agent.is_active.is_(True))
+        ).scalar_one_or_none()
+        if agent is None:
+            return JSONResponse(status_code=404, content={'detail': 'Agent not found'})
+
+        access = session.execute(
+            select(UserAgentAccess.id).where(
+                UserAgentAccess.user_id == principal.user_id,
+                UserAgentAccess.agent_id == agent.id,
+            )
+        ).scalar_one_or_none()
+        if access is None:
+            return JSONResponse(status_code=403, content={'detail': 'Agent forbidden'})
+
+        session.expunge(agent)
+        return agent
+
+
+async def _proxy_agent_request(
+    *, agent_key: str, path: str, request: Request
+) -> Response:
+    try:
+        with SessionLocal() as session:
+            principal = authenticate_bearer_from_headers(
+                request.headers, session=session
+            )
+    except AuthError as exc:
+        return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
+
+    agent_or_response = _get_authorized_agent(
+        agent_key=agent_key,
+        principal=principal,
+    )
+    if isinstance(agent_or_response, Response):
+        return agent_or_response
+    agent = agent_or_response
+
+    upstream_path = f'/{path.lstrip("/")}' if path else '/'
+    upstream_url = _agent_upstream_url(agent, path, request.url.query)
 
     headers = {
         key: value
         for key, value in request.headers.items()
-        if key.lower() not in {'host', 'content-length'}
+        if key.lower() not in {'host', 'content-length', 'authorization'}
     }
-    if principal is not None:
-        display_name = ' '.join(
-            part
-            for part in [principal.user.first_name, principal.user.last_name]
-            if part
-        ).strip()
-        headers['x-authenticated-user'] = display_name or principal.user.email
-        headers['x-authenticated-user-email'] = principal.user.email
-        if principal.user.first_name:
-            headers['x-authenticated-user-first-name'] = principal.user.first_name
-        if principal.user.last_name:
-            headers['x-authenticated-user-last-name'] = principal.user.last_name
-        headers['x-authenticated-user-id'] = str(principal.user_id)
+    headers['x-authenticated-user-email'] = principal.user.email
+    if principal.user.first_name:
+        headers['x-authenticated-user-first-name'] = principal.user.first_name
+    if principal.user.last_name:
+        headers['x-authenticated-user-last-name'] = principal.user.last_name
+    headers['x-authenticated-user-id'] = str(principal.user_id)
 
     body = await request.body()
     try:
         body = _maybe_rewrite_body_for_identity(
-            path=request.url.path,
+            path=upstream_path,
             method=request.method,
             body=body,
             principal=principal,
@@ -266,12 +279,29 @@ async def proxy(path: str, request: Request) -> Response:
     except BodyRewriteError as exc:
         return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
 
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        upstream_response = await client.request(
-            method=request.method,
-            url=upstream_url,
-            headers=headers,
-            content=body,
+    try:
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            upstream_response = await client.request(
+                method=request.method,
+                url=upstream_url,
+                headers=headers,
+                content=body,
+            )
+    except httpx.RequestError as exc:
+        logger.warning(
+            'Agent upstream request failed',
+            extra={
+                'agent_key': agent_key,
+                'upstream_url': upstream_url,
+                'error': str(exc),
+            },
+        )
+        return JSONResponse(
+            status_code=502,
+            content={
+                'detail': 'Agent upstream is unavailable',
+                'agent_key': agent_key,
+            },
         )
 
     response_headers = {
@@ -279,7 +309,7 @@ async def proxy(path: str, request: Request) -> Response:
         for key, value in upstream_response.headers.items()
         if key.lower() not in {'content-length', 'transfer-encoding', 'connection'}
     }
-    if request.url.path == '/openapi.json' and upstream_response.status_code == 200:
+    if upstream_path == '/openapi.json' and upstream_response.status_code == 200:
         spec = _inject_bearer_security(upstream_response.json())
         return JSONResponse(status_code=200, content=spec)
 
@@ -289,3 +319,21 @@ async def proxy(path: str, request: Request) -> Response:
         headers=response_headers,
         media_type=upstream_response.headers.get('content-type'),
     )
+
+
+@router.api_route(
+    '/agents/{agent_key}',
+    methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    include_in_schema=False,
+)
+async def proxy_agent_root(agent_key: str, request: Request) -> Response:
+    return await _proxy_agent_request(agent_key=agent_key, path='', request=request)
+
+
+@router.api_route(
+    '/agents/{agent_key}/{path:path}',
+    methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    include_in_schema=False,
+)
+async def proxy_agent_path(agent_key: str, path: str, request: Request) -> Response:
+    return await _proxy_agent_request(agent_key=agent_key, path=path, request=request)

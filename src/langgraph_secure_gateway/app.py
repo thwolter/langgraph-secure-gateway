@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -25,15 +26,21 @@ def create_gateway_app() -> FastAPI:
         SessionMiddleware,
         secret_key=settings.admin_session_secret,
     )
+    cors_origins = [
+        origin.strip() for origin in settings.cors_origins.split(',') if origin.strip()
+    ]
+    if cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=cors_origins,
+            allow_credentials=True,
+            allow_methods=['*'],
+            allow_headers=['*'],
+        )
 
     @app.on_event('startup')
     async def maybe_init_auth_schema() -> None:
-        auto_migrate = (
-            settings.auth_db_auto_migrate
-            if settings.auth_db_auto_migrate is not None
-            else settings.auth_db_auto_init
-        )
-        if auto_migrate:
+        if settings.auth_db_auto_migrate:
             ensure_auth_schema()
 
     @app.get('/healthz')
