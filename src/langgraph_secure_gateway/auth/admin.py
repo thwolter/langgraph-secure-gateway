@@ -16,7 +16,7 @@ from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal, engine
 from langgraph_secure_gateway.auth.discovery import discover_langgraph_agents
 from langgraph_secure_gateway.auth.models import Agent, User, UserAgentAccess
-from langgraph_secure_gateway.auth.security import verify_password
+from langgraph_secure_gateway.auth.security import create_access_token, verify_password
 
 
 def _normalize_email(value: str) -> str:
@@ -26,6 +26,14 @@ def _normalize_email(value: str) -> str:
 def _get_user_by_email(session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == _normalize_email(email)).limit(1)
     return session.execute(statement).scalar_one_or_none()
+
+
+def _get_admin_user_id(request: Request) -> UUID | None:
+    user_id = request.session.get('admin_user_id')
+    try:
+        return UUID(str(user_id))
+    except (TypeError, ValueError):
+        return None
 
 
 class AdminAuth(AuthenticationBackend):
@@ -212,7 +220,12 @@ class AgentAdmin(ModelView, model=Agent):
     @expose('/discovery/agents', methods=['GET'], include_in_schema=False)
     async def discovery_agents(self, request: Request) -> JSONResponse:
         base_url = str(request.query_params.get('base_url', ''))
-        bearer_token = request.headers.get('x-agent-discovery-token')
+        admin_user_id = _get_admin_user_id(request)
+        bearer_token = (
+            create_access_token(user_id=admin_user_id)
+            if admin_user_id is not None
+            else None
+        )
         try:
             agents = await discover_langgraph_agents(
                 base_url, bearer_token=bearer_token

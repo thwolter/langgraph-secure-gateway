@@ -64,8 +64,8 @@ direct callers from spoofing the gateway's identity headers.
 In the Agent admin form, enter a LangGraph `base_url` that is reachable from the
 gateway container. The form uses that URL to load the available agents. You can
 enter either the API root or a docs URL such as `https://agents.example.com/docs`.
-If the LangGraph service requires authentication, enter the discovery bearer
-token in the form; it is used only for lookup and is not stored with the agent.
+If the LangGraph service requires authentication, discovery automatically uses a
+bearer token generated for the logged-in admin user.
 
 Create the first admin user:
 
