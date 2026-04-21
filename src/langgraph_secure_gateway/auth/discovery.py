@@ -31,8 +31,14 @@ async def discover_langgraph_agents(base_url: str) -> list[dict[str, Any]]:
     async with httpx.AsyncClient(
         timeout=settings.langgraph_discovery_timeout_seconds
     ) as client:
+        headers = {}
+        if settings.gateway_upstream_secret:
+            headers['x-gateway-upstream-secret'] = settings.gateway_upstream_secret
+            headers['x-authenticated-user-id'] = 'gateway-admin-discovery'
+            headers['x-authenticated-user-email'] = 'gateway-admin-discovery'
         response = await client.post(
             f'{normalized}/assistants/search',
+            headers=headers,
             json={'limit': 100, 'offset': 0},
         )
         response.raise_for_status()
