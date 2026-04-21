@@ -19,6 +19,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${GATEWAY_PORT:-8000}:8000"
+    networks:
+      - default
+      - gateway-internal
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,3 +41,8 @@ services:
       retries: 10
 volumes:
   gateway-postgres:
+
+networks:
+  gateway-internal:
+    name: ${GATEWAY_INTERNAL_NETWORK:-gateway-internal}
+    external: true
