@@ -20,7 +20,6 @@ class AuthContext:
     """Decoded and normalized user context from JWT payload."""
 
     user_id: UUID
-    username: str
     is_admin: bool
     panels: tuple[str, ...]
 
@@ -49,8 +48,7 @@ def get_auth_context(
         raise HTTPException(status_code=401, detail='Invalid or expired token') from exc
 
     sub = payload.get('sub')
-    username = payload.get('username')
-    if sub is None or username is None:
+    if sub is None:
         raise HTTPException(status_code=401, detail='Token payload is missing subject')
 
     panels = payload.get('panels') or []
@@ -64,7 +62,6 @@ def get_auth_context(
 
     return AuthContext(
         user_id=user_id,
-        username=str(username),
         is_admin=bool(payload.get('is_admin', False)),
         panels=tuple(str(panel) for panel in panels),
     )

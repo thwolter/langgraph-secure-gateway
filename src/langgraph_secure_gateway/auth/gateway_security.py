@@ -23,7 +23,6 @@ class AuthError(Exception):
 @dataclass(frozen=True)
 class AuthenticatedPrincipal:
     user_id: UUID
-    username: str
     user: User
 
 
@@ -76,8 +75,7 @@ def authenticate_bearer_from_headers(
         raise AuthError(status_code=401, detail='Invalid or expired token') from exc
 
     subject = payload.get('sub')
-    username = payload.get('username')
-    if subject is None or username is None:
+    if subject is None:
         raise AuthError(status_code=401, detail='Token payload is missing subject')
 
     try:
@@ -91,6 +89,5 @@ def authenticate_bearer_from_headers(
 
     return AuthenticatedPrincipal(
         user_id=user_id,
-        username=str(username),
         user=user,
     )

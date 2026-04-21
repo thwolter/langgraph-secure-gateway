@@ -60,22 +60,37 @@ def build(
 
 @app.command('create-admin-user')
 def create_admin_user(
-    username: str = typer.Option(..., '--username'),
+    email: str | None = typer.Option(None, '--email'),
+    username: str | None = typer.Option(
+        None,
+        '--username',
+        help='Deprecated alias for --email.',
+    ),
+    first_name: str | None = typer.Option(None, '--first-name'),
+    last_name: str | None = typer.Option(None, '--last-name'),
     password: str = typer.Option(..., '--password'),
     inactive: bool = typer.Option(False, '--inactive'),
 ) -> None:
     """Create or rotate an admin user in the auth database."""
+    resolved_email = email or username
+    if not resolved_email:
+        typer.echo('Missing required option: --email')
+        raise typer.Exit(code=1)
     action = create_or_update_admin_user(
-        username=username, password=password, inactive=inactive
+        email=resolved_email,
+        first_name=first_name,
+        last_name=last_name,
+        password=password,
+        inactive=inactive,
     )
-    typer.echo(f"Admin user '{username}' {action}.")
+    typer.echo(f"Admin user '{resolved_email}' {action}.")
 
 
 @app.command('init-db')
 def init_db() -> None:
-    """Create auth schema tables in Postgres if they do not exist."""
+    """Run auth database migrations in Postgres."""
     ensure_auth_schema()
-    typer.echo('Auth schema ensured.')
+    typer.echo('Auth schema migrated.')
 
 
 @app.command('reset-db')

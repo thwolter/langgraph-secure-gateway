@@ -5,6 +5,7 @@ description = "Reusable auth gateway and deployment tooling for LangGraph apps."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "alembic>=1.17.0",
   "bcrypt>=4.0.1,<4.1",
   "fastapi>=0.121.0",
   "httpx>=0.28.0",

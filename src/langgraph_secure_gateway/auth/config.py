@@ -17,6 +17,7 @@ class AuthSettings(BaseSettings):
     admin_session_secret: str = 'development-only-admin-session-secret-32'
     langgraph_upstream_url: str = 'http://langgraph-api:8000'
     auth_db_auto_init: bool = False
+    auth_db_auto_migrate: bool | None = None
 
     model_config = SettingsConfigDict(
         env_file='.env',

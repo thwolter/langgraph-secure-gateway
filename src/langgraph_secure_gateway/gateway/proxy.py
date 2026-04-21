@@ -148,9 +148,11 @@ def _maybe_rewrite_body_for_identity(
     if principal is None or method.upper() != 'POST':
         return body
 
-    if path not in {'/threads', '/threads/search', '/runs/batch'} and not _is_run_create_path(
-        path
-    ):
+    if path not in {
+        '/threads',
+        '/threads/search',
+        '/runs/batch',
+    } and not _is_run_create_path(path):
         return body
 
     run_path = path == '/runs/batch' or _is_run_create_path(path)
@@ -240,7 +242,17 @@ async def proxy(path: str, request: Request) -> Response:
         if key.lower() not in {'host', 'content-length'}
     }
     if principal is not None:
-        headers['x-authenticated-user'] = principal.username
+        display_name = ' '.join(
+            part
+            for part in [principal.user.first_name, principal.user.last_name]
+            if part
+        ).strip()
+        headers['x-authenticated-user'] = display_name or principal.user.email
+        headers['x-authenticated-user-email'] = principal.user.email
+        if principal.user.first_name:
+            headers['x-authenticated-user-first-name'] = principal.user.first_name
+        if principal.user.last_name:
+            headers['x-authenticated-user-last-name'] = principal.user.last_name
         headers['x-authenticated-user-id'] = str(principal.user_id)
 
     body = await request.body()

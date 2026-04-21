@@ -17,8 +17,12 @@ from langgraph_secure_gateway.auth.models import PanelAccess, User
 from langgraph_secure_gateway.auth.security import verify_password
 
 
-def _get_user_by_username(session: Session, username: str) -> User | None:
-    statement = select(User).where(User.username == username).limit(1)
+def _normalize_email(value: str) -> str:
+    return value.strip().lower()
+
+
+def _get_user_by_email(session: Session, email: str) -> User | None:
+    statement = select(User).where(User.email == _normalize_email(email)).limit(1)
     return session.execute(statement).scalar_one_or_none()
 
 
@@ -28,11 +32,11 @@ class AdminAuth(AuthenticationBackend):
 
     async def login(self, request: Request) -> bool:
         form = await request.form()
-        username = str(form.get('username', '')).strip()
+        email = _normalize_email(str(form.get('username', '')))
         password = str(form.get('password', '')).strip()
 
         with SessionLocal() as session:
-            user = _get_user_by_username(session, username)
+            user = _get_user_by_email(session, email)
             if user is None or not user.is_active or not user.is_admin:
                 return False
             if not verify_password(password, user.password_hash):
@@ -42,7 +46,7 @@ class AdminAuth(AuthenticationBackend):
             {
                 'token': f'admin:{user.id}',
                 'admin_user_id': str(user.id),
-                'admin_username': user.username,
+                'admin_email': user.email,
             }
         )
         return True
@@ -78,25 +82,35 @@ class UserAdmin(ModelView, model=User):
 
     column_list = [
         User.id,
-        User.username,
+        User.email,
+        User.first_name,
+        User.last_name,
         User.is_active,
         User.is_admin,
+        User.last_login_at,
         User.created_at,
+        User.updated_at,
     ]
-    column_searchable_list = [User.username]
+    column_searchable_list = [User.email, User.first_name, User.last_name]
     column_sortable_list = [
         User.id,
-        User.username,
+        User.email,
+        User.first_name,
+        User.last_name,
         User.is_active,
         User.is_admin,
+        User.last_login_at,
         User.created_at,
+        User.updated_at,
     ]
     column_details_exclude_list = [User.password_hash]
     column_labels = {User.password_hash: 'Password'}
 
     form_columns = [
         User.id,
-        User.username,
+        User.email,
+        User.first_name,
+        User.last_name,
         User.password_hash,
         User.is_active,
         User.is_admin,
@@ -117,6 +131,11 @@ class UserAdmin(ModelView, model=User):
     async def on_model_change(
         self, data, model: User, is_created: bool, request: Request
     ) -> None:
+        email = str(data.get('email', '')).strip().lower()
+        if not email:
+            raise ValueError('Email is required')
+        data['email'] = email
+
         raw_password = str(data.get('password_hash', '')).strip()
         if not raw_password:
             if is_created:

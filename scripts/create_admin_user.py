@@ -10,7 +10,13 @@ from langgraph_secure_gateway.auth_cli import create_or_update_admin_user
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--username', required=True, help='Admin username')
+    parser.add_argument('--email', help='Admin email')
+    parser.add_argument(
+        '--username',
+        help='Deprecated alias for --email',
+    )
+    parser.add_argument('--first-name', help='Admin first name')
+    parser.add_argument('--last-name', help='Admin last name')
     parser.add_argument('--password', required=True, help='Admin password')
     parser.add_argument(
         '--inactive',
@@ -23,12 +29,17 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    email = args.email or args.username
+    if not email:
+        parser.error('--email is required')
     action = create_or_update_admin_user(
-        username=args.username,
+        email=email,
+        first_name=args.first_name,
+        last_name=args.last_name,
         password=args.password,
         inactive=args.inactive,
     )
-    print(f"Admin user '{args.username}' {action}.")
+    print(f"Admin user '{email}' {action}.")
     return 0
 
 

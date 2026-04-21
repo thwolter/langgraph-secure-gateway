@@ -24,15 +24,12 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(
-    *, user_id: UUID, username: str, is_admin: bool, panels: list[str]
-) -> str:
+def create_access_token(*, user_id: UUID, is_admin: bool, panels: list[str]) -> str:
     """Create a signed JWT access token for a specific user."""
     now = datetime.now(tz=UTC)
     expire_at = now + timedelta(minutes=settings.jwt_expire_minutes)
     payload: dict[str, Any] = {
         'sub': str(user_id),
-        'username': username,
         'is_admin': is_admin,
         'panels': panels,
         'iat': int(now.timestamp()),

@@ -21,5 +21,9 @@ src/langgraph_secure_gateway/auth/gateway_security.py
 src/langgraph_secure_gateway/auth/models.py
 src/langgraph_secure_gateway/auth/routes.py
 src/langgraph_secure_gateway/auth/security.py
+src/langgraph_secure_gateway/auth/migrations/__init__.py
+src/langgraph_secure_gateway/auth/migrations/env.py
+src/langgraph_secure_gateway/auth/migrations/versions/20260421_0001_email_login_user_profile.py
+src/langgraph_secure_gateway/auth/migrations/versions/__init__.py
 src/langgraph_secure_gateway/gateway/__init__.py
 src/langgraph_secure_gateway/gateway/proxy.py

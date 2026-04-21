@@ -7,7 +7,7 @@ Reusable security gateway package for LangGraph applications.
 - `secure-langgraph build`: wrapper around `langgraph build` with safe defaults
 - `secure-langgraph init-deploy`: generate deploy files for a new LangGraph repo
 - `secure-langgraph create-admin-user`: bootstrap or rotate admin credentials
-- `secure-langgraph init-db`: create auth tables in Postgres
+- `secure-langgraph init-db`: run auth database migrations in Postgres
 - `secure-langgraph reset-db`: drop and recreate auth schema (destructive)
 
 List available commands:
@@ -25,11 +25,15 @@ uv run secure-langgraph build --tag langgraph-app
 # Scaffold deploy files in the current project
 uv run secure-langgraph init-deploy --cwd . --image-tag langgraph-app
 
-# Initialize auth schema tables
+# Run auth schema migrations
 uv run secure-langgraph init-db
 
 # Create or rotate admin credentials
-uv run secure-langgraph create-admin-user --username admin --password 'change-me'
+uv run secure-langgraph create-admin-user \
+  --email admin@example.com \
+  --first-name Admin \
+  --last-name User \
+  --password 'change-me'
 
 # Reset DB schema (destructive)
 uv run secure-langgraph reset-db --yes
@@ -38,8 +42,15 @@ uv run secure-langgraph reset-db --yes
 Compatibility shim (legacy script-style invocation):
 
 ```bash
-uv run python scripts/create_admin_user.py --username admin --password 'change-me'
+uv run python scripts/create_admin_user.py \
+  --email admin@example.com \
+  --first-name Admin \
+  --last-name User \
+  --password 'change-me'
 ```
+
+`--username` is still accepted as a deprecated alias for `--email` to ease
+upgrades from older deployments.
 
 `init-deploy` now also:
 
@@ -64,7 +75,9 @@ Run with uvicorn:
 uvicorn langgraph_secure_gateway.entrypoints:app --host 0.0.0.0 --port 8000
 ```
 
-Set `AUTH_DB_AUTO_INIT=true` to auto-create auth tables on gateway startup.
+Set `AUTH_DB_AUTO_MIGRATE=true` to run auth database migrations on gateway
+startup. `AUTH_DB_AUTO_INIT=true` is still recognized as a deprecated
+compatibility fallback when `AUTH_DB_AUTO_MIGRATE` is unset.
 
 ## Development
 
@@ -127,10 +140,20 @@ Optional environment variables:
 
 Runtime behavior:
 
-- Clients get a token from `POST /auth/login`.
+- Clients get a token from `POST /auth/login` with email and password:
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "change-me"
+}
+```
+
+- Login normalizes email by trimming whitespace and lowercasing it.
 - Every non-public request must provide `Authorization: Bearer <token>`.
 - The token `sub` is a UUID and must match an active user in DB.
-- Gateway forwards `x-authenticated-user-id` (UUID) and `x-authenticated-user` upstream.
+- The token does not store email, first name, or last name.
+- Gateway forwards `x-authenticated-user-id` (UUID), `x-authenticated-user`, `x-authenticated-user-email`, `x-authenticated-user-first-name`, and `x-authenticated-user-last-name` upstream when available.
 - Gateway injects identity into selected LangGraph request bodies:
   - `POST /threads`: sets `metadata.owner` to token `sub`.
   - `POST /threads/search` (non-admin): enforces `metadata.owner=<token sub>`.
@@ -140,6 +163,49 @@ Runtime behavior:
   - `metadata.owner` is used for thread ownership semantics only.
   - `metadata.user_id` is not written or consumed by the gateway.
   - Requests with invalid run payload JSON/shape are rejected with `400`.
+
+## Database migrations
+
+The auth database is managed with package-local Alembic migrations. The first
+migration upgrades existing username-based databases by:
+
+- adding `email`, `first_name`, `last_name`, `created_at`, `updated_at`, and
+  `last_login_at` to `users` where missing
+- copying existing `users.username` values into `users.email`
+- making `users.email` non-null and unique
+- leaving the old `users.username` column in place for compatibility
+
+The database does not enforce strict email syntax. New login and admin creation
+paths normalize email input, but existing username values are accepted as email
+values during migration.
+
+Automatic container migration is enabled in newly generated deploy files with:
+
+```yaml
+AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
+```
+
+For an existing `docker-compose.yaml`, update the `auth-gateway.environment`
+section:
+
+```diff
+ services:
+   auth-gateway:
+     environment:
+-      AUTH_DB_AUTO_INIT: ${AUTH_DB_AUTO_INIT:-true}
++      AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
+```
+
+If you cannot edit the compose file immediately, `AUTH_DB_AUTO_INIT=true` still
+acts as a compatibility fallback, but new deployments should use
+`AUTH_DB_AUTO_MIGRATE`.
+
+After deploying the new image, the gateway container will run migrations during
+startup once Postgres is healthy. To run the migration manually instead:
+
+```bash
+docker compose run --rm auth-gateway secure-langgraph init-db
+```
 
 ## Reset database (destructive)
 

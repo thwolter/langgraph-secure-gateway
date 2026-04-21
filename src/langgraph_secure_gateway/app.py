@@ -28,7 +28,12 @@ def create_gateway_app() -> FastAPI:
 
     @app.on_event('startup')
     async def maybe_init_auth_schema() -> None:
-        if settings.auth_db_auto_init:
+        auto_migrate = (
+            settings.auth_db_auto_migrate
+            if settings.auth_db_auto_migrate is not None
+            else settings.auth_db_auto_init
+        )
+        if auto_migrate:
             ensure_auth_schema()
 
     @app.get('/healthz')
