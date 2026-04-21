@@ -20,8 +20,8 @@ services:
     ports:
       - "${GATEWAY_PORT:-8000}:8000"
     networks:
-      - default
-      - gateway-internal
+      default:
+      gateway-internal:
     depends_on:
       postgres:
         condition: service_healthy
