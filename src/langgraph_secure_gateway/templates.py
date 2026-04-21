@@ -50,7 +50,7 @@ services:
   auth-gateway:
     pull_policy: never
     image: \"{image_tag}\"
-    entrypoint: [\"python\", \"-m\", \"uvicorn\", \"langgraph_secure_gateway.entrypoints:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]
+    entrypoint: [\"python\", \"-m\", \"uvicorn\", \"langgraph_secure_gateway.entrypoints:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\", \"--proxy-headers\", \"--forwarded-allow-ips\", \"*\"]
     expose:
       - \"8000\"
     depends_on:

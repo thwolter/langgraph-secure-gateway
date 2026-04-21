@@ -14,7 +14,6 @@
           {% endif %}
         </div>
         <fieldset class="form-fieldset">
-          {% include "sqladmin/_agent_discovery.html" %}
           {{ render_form_fields(form, form_opts=form_opts) }}
         </fieldset>
         <div class="row">
@@ -35,8 +34,4 @@
     </div>
   </div>
 </div>
-{% endblock %}
-{% block tail %}
-{{ super() }}
-{% include "sqladmin/_agent_discovery_script.html" %}
 {% endblock %}

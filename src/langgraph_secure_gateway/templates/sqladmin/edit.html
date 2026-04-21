@@ -4,7 +4,7 @@
 <div class="col-12">
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">New {{ model_view.name }}</h3>
+      <h3 class="card-title">Edit {{ model_view.name }}</h3>
     </div>
     <div class="card-body border-bottom py-3">
       <form action="" method="POST" enctype="multipart/form-data">
@@ -14,7 +14,6 @@
           {% endif %}
         </div>
         <fieldset class="form-fieldset">
-          {% include "sqladmin/_agent_discovery.html" %}
           {{ render_form_fields(form, form_opts=form_opts) }}
         </fieldset>
         <div class="row">
@@ -27,7 +26,13 @@
             <div class="btn-group flex-wrap" data-toggle="buttons">
               <input type="submit" name="save" value="Save" class="btn">
               <input type="submit" name="save" value="Save and continue editing" class="btn">
+              {% if model_view.can_create %}
+              {% if model_view.save_as %}
+              <input type="submit" name="save" value="Save as new" class="btn">
+              {% else %}
               <input type="submit" name="save" value="Save and add another" class="btn">
+              {% endif %}
+              {% endif %}
             </div>
           </div>
         </div>
@@ -35,8 +40,4 @@
     </div>
   </div>
 </div>
-{% endblock %}
-{% block tail %}
-{{ super() }}
-{% include "sqladmin/_agent_discovery_script.html" %}
 {% endblock %}

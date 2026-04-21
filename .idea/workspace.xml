@@ -18,9 +18,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes.">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/docker_compose_coolify_yaml__Compose_Deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Docker_Compose.xml" afterDir="false" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -305,7 +308,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776764999664</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability.">
+      <option name="closed" value="true" />
+      <created>1776765894713</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1776765894713</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -344,6 +355,7 @@
     <MESSAGE value="feat(auth): add upstream secret headers for LangGraph discovery&#10;&#10;Include `x-gateway-upstream-secret` and authentication headers in LangGraph discovery requests if `GATEWAY_UPSTREAM_SECRET` is configured. Enhances secure communication between gateway and LangGraph services." />
     <MESSAGE value="feat(auth): add bearer token support for agent discovery&#10;&#10;Added support for discovery bearer tokens to authenticate requests when fetching LangGraph agents. Updated admin form, templates, and scripts to include token input. Adjusted URL normalization logic to handle docs URLs dynamically. Updated `README` with usage instructions." />
     <MESSAGE value="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): remove token input from agent discovery form&#10;&#10;Removed token input field and related logic from the agent discovery form to simplify the UI and authentication flow. Adjusted scripts, templates, and admin logic to utilize automatically generated tokens for authenticated admin users. Updated `README` to reflect these changes." />
+    <MESSAGE value="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability." />
   </component>
 </project>
