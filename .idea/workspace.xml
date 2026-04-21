@@ -20,10 +20,17 @@
   <component name="ChangeListManager">
     <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): fix URL construction in agent discovery script&#10;&#10;Replaced string concatenation with `URL` objects for constructing request URLs, ensuring proper normalization and compatibility with various base URLs. Updated related logic in the agent discovery script to improve maintainability and reliability.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway.egg-info/dependency_links.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/security.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +44,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="develop" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -82,7 +89,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "develop",
     "last_opened_file_path": "/Users/thomas/PycharmProjects/langgraph-secure-gateway",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

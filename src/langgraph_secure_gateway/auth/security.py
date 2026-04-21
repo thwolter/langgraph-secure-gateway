@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
@@ -39,3 +42,18 @@ def create_access_token(*, user_id: UUID) -> str:
 def decode_access_token(token: str) -> dict[str, Any]:
     """Decode and validate a signed JWT access token."""
     return jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+
+
+def create_refresh_token() -> str:
+    """Create an opaque refresh token suitable for an HttpOnly cookie."""
+    return secrets.token_urlsafe(48)
+
+
+def hash_refresh_token(token: str) -> str:
+    """Hash a refresh token before storing or looking it up."""
+    return hashlib.sha256(token.encode('utf-8')).hexdigest()
+
+
+def verify_refresh_token(token: str, token_hash: str) -> bool:
+    """Compare a refresh token with a stored hash without leaking timing data."""
+    return hmac.compare_digest(hash_refresh_token(token), token_hash)

@@ -54,6 +54,13 @@ class User(Base):
         cascade='all, delete-orphan',
         passive_deletes=True,
     )
+    refresh_sessions: Mapped[list['RefreshSession']] = relationship(
+        'RefreshSession',
+        back_populates='user',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        foreign_keys='RefreshSession.user_id',
+    )
 
     def __str__(self) -> str:
         return self.email
@@ -118,3 +125,48 @@ class UserAgentAccess(Base):
 
     user: Mapped[User] = relationship('User', back_populates='agent_access')
     agent: Mapped[Agent] = relationship('Agent', back_populates='user_access')
+
+
+class RefreshSession(Base):
+    """Revocable browser session used to rotate refresh tokens."""
+
+    __tablename__ = 'refresh_sessions'
+
+    id: Mapped[UUID] = mapped_column(Uuid(), primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(
+        Uuid(),
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True,
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    rotated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    revoked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    replaced_by_id: Mapped[UUID | None] = mapped_column(
+        Uuid(),
+        ForeignKey('refresh_sessions.id', ondelete='SET NULL'),
+        nullable=True,
+    )
+
+    user: Mapped[User] = relationship(
+        'User',
+        back_populates='refresh_sessions',
+        foreign_keys=[user_id],
+    )
+    replaced_by: Mapped['RefreshSession | None'] = relationship(
+        'RefreshSession',
+        remote_side=[id],
+        foreign_keys=[replaced_by_id],
+    )

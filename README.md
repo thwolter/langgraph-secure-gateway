@@ -47,6 +47,11 @@ Optional environment variables:
 
 - `JWT_ALGORITHM`: default `HS256`
 - `JWT_EXPIRE_MINUTES`: default `60`
+- `REFRESH_TOKEN_EXPIRE_DAYS`: default `14`
+- `REFRESH_COOKIE_NAME`: default `lgsg_refresh_token`
+- `REFRESH_COOKIE_SECURE`: default `true`; set to `false` only for local
+  HTTP development
+- `REFRESH_COOKIE_SAMESITE`: default `lax`
 - `AUTH_DB_AUTO_MIGRATE`: run Alembic migrations on startup, default `false`
 - `CORS_ORIGINS`: comma-separated browser origins, for example
   `https://app.example.com,http://localhost:5173`
@@ -144,6 +149,8 @@ Content-Type: application/json
 }
 ```
 
+The response also sets an HttpOnly refresh cookie scoped to `/auth`.
+
 Response:
 
 ```json
@@ -153,6 +160,36 @@ Response:
   "expires_in": 3600
 }
 ```
+
+Refresh an access token while the user keeps working:
+
+```http
+POST /auth/refresh
+Cookie: lgsg_refresh_token=opaque-refresh-token
+```
+
+Response:
+
+```json
+{
+  "access_token": "new-jwt",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+The refresh endpoint rotates the refresh cookie on each successful call. Browser
+frontends on a different origin must call login, refresh, and logout with
+credentials enabled so the HttpOnly cookie is stored and sent.
+
+Logout:
+
+```http
+POST /auth/logout
+Cookie: lgsg_refresh_token=opaque-refresh-token
+```
+
+The gateway revokes the refresh session and clears the cookie.
 
 Load the authenticated session:
 
@@ -205,6 +242,15 @@ Content-Type: application/json
   }
 }
 ```
+
+Recommended frontend behavior:
+
+1. Keep the access token in memory.
+2. Schedule `POST /auth/refresh` about 60 seconds before `expires_in`.
+3. If an authenticated request returns `401`, call `/auth/refresh` once and retry
+   the original request with the new access token.
+4. Use a single in-flight refresh promise so concurrent requests do not race.
+5. If refresh fails, clear frontend auth state and show the login screen.
 
 The gateway injects the authenticated UUID into supported LangGraph request
 bodies:
