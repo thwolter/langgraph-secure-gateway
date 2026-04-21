@@ -64,6 +64,12 @@ For Coolify deployments where private LangGraph services share an external
 Docker network, set `GATEWAY_NETWORK_NAME` to the same network name used by the
 LangGraph server compose file. The default is `gateway-net`.
 
+The Agent admin form can discover LangGraph APIs from `LANGGRAPH_DISCOVERY_URLS`,
+a comma-separated list such as `http://langgraph-api:8000`. If the gateway
+container has access to `/var/run/docker.sock`, it can also inspect
+`GATEWAY_NETWORK_NAME` and list LangGraph containers that respond to
+`/assistants/search`.
+
 Create the first admin user:
 
 ```bash

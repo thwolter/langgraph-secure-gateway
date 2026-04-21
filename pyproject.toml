@@ -35,7 +35,7 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-"langgraph_secure_gateway" = ["templates/deploy/*"]
+"langgraph_secure_gateway" = ["templates/deploy/*", "templates/sqladmin/*"]
 
 [tool.ruff.format]
 quote-style = "single"

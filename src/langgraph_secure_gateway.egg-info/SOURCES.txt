@@ -17,6 +17,7 @@ src/langgraph_secure_gateway/auth/admin.py
 src/langgraph_secure_gateway/auth/config.py
 src/langgraph_secure_gateway/auth/db.py
 src/langgraph_secure_gateway/auth/dependencies.py
+src/langgraph_secure_gateway/auth/discovery.py
 src/langgraph_secure_gateway/auth/gateway_security.py
 src/langgraph_secure_gateway/auth/models.py
 src/langgraph_secure_gateway/auth/routes.py
@@ -27,3 +28,7 @@ src/langgraph_secure_gateway/auth/migrations/versions/20260421_0001_email_login_
 src/langgraph_secure_gateway/auth/migrations/versions/__init__.py
 src/langgraph_secure_gateway/gateway/__init__.py
 src/langgraph_secure_gateway/gateway/proxy.py
+src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery.html
+src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html
+src/langgraph_secure_gateway/templates/sqladmin/agent_create.html
+src/langgraph_secure_gateway/templates/sqladmin/agent_edit.html

@@ -1,0 +1,131 @@
+<script>
+(() => {
+  const urlSelect = document.querySelector('#network-url-select');
+  const agentSelect = document.querySelector('#network-agent-select');
+  const baseUrlInput = document.querySelector('[name="base_url"]');
+  const assistantInput = document.querySelector('[name="assistant_id"]');
+  const graphInput = document.querySelector('[name="graph_id"]');
+  const nameInput = document.querySelector('[name="name"]');
+  const keyInput = document.querySelector('[name="key"]');
+
+  if (!urlSelect || !agentSelect || !baseUrlInput) {
+    return;
+  }
+
+  const urlsEndpoint = "{{ url_for('admin:view-agent-discovery_urls') }}";
+  const agentsEndpoint = "{{ url_for('admin:view-agent-discovery_agents') }}";
+
+  function setOptions(select, options) {
+    select.replaceChildren(...options);
+  }
+
+  function option(label, value = '') {
+    const item = document.createElement('option');
+    item.textContent = label;
+    item.value = value;
+    return item;
+  }
+
+  function slugify(value) {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 120);
+  }
+
+  function agentLabel(agent) {
+    const parts = [agent.name, agent.graph_id, agent.assistant_id].filter(Boolean);
+    return parts.join(' / ');
+  }
+
+  async function loadUrls() {
+    setOptions(urlSelect, [option('Loading...')]);
+    try {
+      const response = await fetch(urlsEndpoint, { headers: { Accept: 'application/json' } });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const payload = await response.json();
+      const urls = Array.isArray(payload.urls) ? payload.urls : [];
+      const options = [option('Select a URL')];
+      for (const item of urls) {
+        options.push(option(item.url, item.url));
+      }
+      if (baseUrlInput.value && !urls.some((item) => item.url === baseUrlInput.value)) {
+        options.push(option(baseUrlInput.value, baseUrlInput.value));
+      }
+      if (options.length === 1) {
+        options[0].textContent = 'No URLs found';
+      }
+      setOptions(urlSelect, options);
+      if (baseUrlInput.value) {
+        urlSelect.value = baseUrlInput.value;
+        await loadAgents(baseUrlInput.value);
+      }
+    } catch {
+      setOptions(urlSelect, [option('Discovery unavailable')]);
+    }
+  }
+
+  async function loadAgents(baseUrl) {
+    setOptions(agentSelect, [option('Loading...')]);
+    agentSelect.disabled = true;
+    try {
+      const params = new URLSearchParams({ base_url: baseUrl });
+      const response = await fetch(`${agentsEndpoint}?${params}`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const payload = await response.json();
+      const agents = Array.isArray(payload.agents) ? payload.agents : [];
+      const options = [option('Select an agent')];
+      for (const agent of agents) {
+        const item = option(agentLabel(agent), JSON.stringify(agent));
+        options.push(item);
+      }
+      if (options.length === 1) {
+        options[0].textContent = 'No agents found';
+      }
+      setOptions(agentSelect, options);
+      agentSelect.disabled = options.length === 1;
+    } catch {
+      setOptions(agentSelect, [option('Agent lookup failed')]);
+    }
+  }
+
+  urlSelect.addEventListener('change', async () => {
+    const baseUrl = urlSelect.value;
+    baseUrlInput.value = baseUrl;
+    if (!baseUrl) {
+      setOptions(agentSelect, [option('Select a URL first')]);
+      agentSelect.disabled = true;
+      return;
+    }
+    await loadAgents(baseUrl);
+  });
+
+  agentSelect.addEventListener('change', () => {
+    if (!agentSelect.value) {
+      return;
+    }
+    const agent = JSON.parse(agentSelect.value);
+    if (assistantInput && agent.assistant_id) {
+      assistantInput.value = agent.assistant_id;
+    }
+    if (graphInput && agent.graph_id) {
+      graphInput.value = agent.graph_id;
+    }
+    if (nameInput && !nameInput.value && agent.name) {
+      nameInput.value = agent.name;
+    }
+    if (keyInput && !keyInput.value) {
+      keyInput.value = slugify(agent.name || agent.graph_id || agent.assistant_id || '');
+    }
+  });
+
+  loadUrls();
+})();
+</script>

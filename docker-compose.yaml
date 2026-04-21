@@ -30,6 +30,9 @@ services:
       ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET}
       AUTH_DB_AUTO_MIGRATE: ${AUTH_DB_AUTO_MIGRATE:-true}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
+      GATEWAY_NETWORK_NAME: ${GATEWAY_NETWORK_NAME:-gateway-net}
+      LANGGRAPH_DISCOVERY_URLS: ${LANGGRAPH_DISCOVERY_URLS:-}
+      LANGGRAPH_DISCOVERY_PORT: ${LANGGRAPH_DISCOVERY_PORT:-8000}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
       interval: 10s
