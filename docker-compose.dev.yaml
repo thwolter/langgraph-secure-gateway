@@ -1,0 +1,21 @@
+services:
+  gateway:
+    command:
+      - python
+      - -m
+      - uvicorn
+      - langgraph_secure_gateway.entrypoints:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --proxy-headers
+      - --forwarded-allow-ips
+      - "*"
+      - --app-dir
+      - /app/src
+      - --reload
+      - --reload-dir
+      - /app/src
+    volumes:
+      - ./src:/app/src

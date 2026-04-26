@@ -8,6 +8,11 @@
             <option value=".env" />
           </list>
         </option>
+        <option name="secondarySourceFiles">
+          <list>
+            <option value="docker-compose.dev.yaml" />
+          </list>
+        </option>
         <option name="sourceFilePath" value="docker-compose.yaml" />
       </settings>
     </deployment>

@@ -1,0 +1,116 @@
+{% extends "sqladmin/layout.html" %}
+{% block content %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Create LangGraph Assistant</h3>
+    </div>
+    <div class="card-body border-bottom py-3">
+      {% if error %}
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+      <div class="alert alert-success" role="alert">
+        Assistant created.
+        {% if result.agent %}
+        Gateway agent <strong>{{ result.agent.key }}</strong> was saved and is active.
+        {% endif %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">LangGraph response</label>
+        <pre class="form-control" style="min-height: 8rem; white-space: pre-wrap;">{{ result.assistant }}</pre>
+      </div>
+      {% endif %}
+
+      <form action="" method="POST">
+        <fieldset class="form-fieldset">
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="base_url">LangGraph base URL</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="base_url" name="base_url" value="{{ values.base_url }}" placeholder="https://langgraph.example.com" required>
+              <small class="form-hint">Use the private LangGraph API root reachable by the gateway. Docs URLs are accepted.</small>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="graph_id">Graph ID</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="graph_id" name="graph_id" value="{{ values.graph_id }}" placeholder="RiskExpert" required>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="assistant_id">Assistant ID</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="assistant_id" name="assistant_id" value="{{ values.assistant_id }}" placeholder="risk-expert-sefe">
+              <small class="form-hint">Leave empty to let LangGraph generate an ID.</small>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="name">Name</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="name" name="name" value="{{ values.name }}" placeholder="Risk Expert - SEFE" required>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="description">Description</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" id="description" name="description" rows="2">{{ values.description }}</textarea>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="context">Context JSON</label>
+            <div class="col-sm-10">
+              <textarea class="form-control font-monospace" id="context" name="context" rows="7">{{ values.context }}</textarea>
+              <small class="form-hint">For RiskExpert, include company_profile_id and evaluation_spec_id.</small>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="metadata">Metadata JSON</label>
+            <div class="col-sm-10">
+              <textarea class="form-control font-monospace" id="metadata" name="metadata" rows="4">{{ values.metadata }}</textarea>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="mb-3 row">
+            <label class="form-label col-sm-2 col-form-label" for="key">Gateway agent key</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="key" name="key" value="{{ values.key }}" placeholder="risk-expert-sefe">
+              <small class="form-hint">Used in gateway URLs. If omitted, it is generated from assistant ID or name.</small>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <div class="col-sm-10 offset-sm-2">
+              <label class="form-check">
+                <input class="form-check-input" type="checkbox" name="create_gateway_agent" {% if values.create_gateway_agent %}checked{% endif %}>
+                <span class="form-check-label">Create or update matching gateway Agent</span>
+              </label>
+              <label class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="grant_current_admin" {% if values.grant_current_admin %}checked{% endif %}>
+                <span class="form-check-label">Grant this admin user access to the gateway Agent</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row">
+          <div class="col-md-2">
+            <a href="{{ request.url_for('admin:index') }}" class="btn">Cancel</a>
+          </div>
+          <div class="col-md-6">
+            <input type="submit" value="Create assistant" class="btn btn-primary">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
