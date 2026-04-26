@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 THREAD_RUN_PATH_RE = re.compile(r'^/threads/[^/]+/runs(?:/(?:stream|wait))?$')
 STREAM_PATH_RE = re.compile(
-    r'^/(?:runs/stream|threads/[^/]+/runs/stream|threads/[^/]+/runs/[^/]+/stream)$'
+    r'^/(?:runs/(?:stream|[^/]+/stream)|threads/[^/]+/(?:stream|runs/stream|runs/[^/]+/stream))$'
 )
 
 

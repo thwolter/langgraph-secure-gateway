@@ -7,6 +7,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.security import APIKeyCookie, HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -32,6 +33,18 @@ from langgraph_secure_gateway.auth.security import (
 )
 
 router = APIRouter(prefix='/auth', tags=['auth'])
+refresh_cookie_scheme = APIKeyCookie(
+    name=settings.refresh_cookie_name,
+    scheme_name='RefreshCookie',
+    description='Opaque refresh token stored as an HttpOnly cookie.',
+    auto_error=False,
+)
+refresh_bearer_scheme = HTTPBearer(
+    scheme_name='RefreshTokenBearer',
+    bearerFormat='opaque-refresh-token',
+    description='Opaque refresh token. This is not the JWT access token.',
+    auto_error=False,
+)
 
 
 class LoginRequest(BaseModel):
@@ -147,6 +160,18 @@ def _find_refresh_session(
     return session.execute(statement).scalar_one_or_none()
 
 
+def _get_refresh_token(
+    request: Request,
+    cookie_token: str | None,
+    bearer_token: HTTPAuthorizationCredentials | None,
+) -> str | None:
+    return (
+        cookie_token
+        or request.cookies.get(settings.refresh_cookie_name)
+        or (bearer_token.credentials if bearer_token is not None else None)
+    )
+
+
 def _revoke_user_refresh_sessions(*, user_id: UUID, session: Session) -> None:
     now = datetime.now(tz=UTC)
     statement = select(RefreshSession).where(
@@ -188,8 +213,12 @@ def refresh(
     request: Request,
     response: Response,
     session: Annotated[Session, Depends(get_session)],
+    cookie_token: Annotated[str | None, Depends(refresh_cookie_scheme)],
+    bearer_token: Annotated[
+        HTTPAuthorizationCredentials | None, Depends(refresh_bearer_scheme)
+    ],
 ) -> TokenResponse:
-    refresh_token = request.cookies.get(settings.refresh_cookie_name)
+    refresh_token = _get_refresh_token(request, cookie_token, bearer_token)
     if not refresh_token:
         raise HTTPException(status_code=401, detail='Missing refresh token')
 
@@ -238,8 +267,12 @@ def logout(
     request: Request,
     response: Response,
     session: Annotated[Session, Depends(get_session)],
+    cookie_token: Annotated[str | None, Depends(refresh_cookie_scheme)],
+    bearer_token: Annotated[
+        HTTPAuthorizationCredentials | None, Depends(refresh_bearer_scheme)
+    ],
 ) -> dict[str, bool]:
-    refresh_token = request.cookies.get(settings.refresh_cookie_name)
+    refresh_token = _get_refresh_token(request, cookie_token, bearer_token)
     if refresh_token:
         refresh_session = _find_refresh_session(
             refresh_token=refresh_token, session=session

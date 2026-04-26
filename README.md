@@ -168,6 +168,17 @@ POST /auth/refresh
 Cookie: lgsg_refresh_token=opaque-refresh-token
 ```
 
+Non-browser clients may send the opaque refresh token as a bearer credential
+instead:
+
+```http
+POST /auth/refresh
+Authorization: Bearer opaque-refresh-token
+```
+
+This must be the opaque refresh token, not the JWT access token returned in the
+login response body.
+
 Response:
 
 ```json
@@ -188,6 +199,8 @@ Logout:
 POST /auth/logout
 Cookie: lgsg_refresh_token=opaque-refresh-token
 ```
+
+Non-browser clients may also use `Authorization: Bearer opaque-refresh-token`.
 
 The gateway revokes the refresh session and clears the cookie.
 

@@ -18,10 +18,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(devops): add assistant creation UI and development Docker support">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Docker_Compose.xml" beforeDir="false" />
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(proxy): add streaming support for upstream responses&#10;&#10;Implemented streaming support for proxy requests, leveraging `StreamingResponse` for improved performance and resource management. Added `_is_stream_path` and `_close_stream_response` helpers to handle stream paths and clean up resources. Updated request timeout logic and client handling to accommodate streaming scenarios.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +124,7 @@
       <workItem from="1776331434226" duration="2117000" />
       <workItem from="1776710426926" duration="8104000" />
       <workItem from="1777204520528" duration="772000" />
-      <workItem from="1777205445827" duration="1825000" />
+      <workItem from="1777205445827" duration="4373000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -334,7 +334,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777186565880</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="feat(proxy): add streaming support for upstream responses&#10;&#10;Implemented streaming support for proxy requests, leveraging `StreamingResponse` for improved performance and resource management. Added `_is_stream_path` and `_close_stream_response` helpers to handle stream paths and clean up resources. Updated request timeout logic and client handling to accommodate streaming scenarios.">
+      <option name="closed" value="true" />
+      <created>1777214751852</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1777214751852</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -352,7 +360,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initial commit" />
     <MESSAGE value="feat(auth): add database schema initialization for auth tables&#10;&#10;Enable automatic creation of authentication tables with `AUTH_DB_AUTO_INIT` and a new `secure-langgraph init-db` CLI command. Added startup hook to ensure schema initialization based on configuration.&#10;&#10;BREAKING CHANGE: Removed SQL file-based schema initialization in favor of runtime and CLI-based schema setup." />
     <MESSAGE value="feat: add pre-commit" />
     <MESSAGE value="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes." />
@@ -377,6 +384,7 @@
     <MESSAGE value="feat(auth): implement refresh token system with secure cookie management&#10;&#10;Added a refresh token mechanism featuring HttpOnly secure cookies and session rotation for improved session management. Enhanced `/login`, `/refresh`, and `/logout` endpoints. Introduced `refresh_sessions` table and related Alembic migration. Updated configuration for refresh token settings.&#10;&#10;BREAKING CHANGE: The new refresh token system replaces existing session management. Update deployment configurations to include refresh token environment variables." />
     <MESSAGE value="feat(sqladmin, devops): add assistant creation UI and development Docker support&#10;&#10;Introduced a new HTML template for creating LangGraph assistants in the SQLAdmin interface, enhancing usability. Added `docker-compose.dev.yaml` file for streamlined local development with hot-reloading. Updated IntelliJ run configuration for the new Compose file." />
     <MESSAGE value="feat(devops): add assistant creation UI and development Docker support" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(devops): add assistant creation UI and development Docker support" />
+    <MESSAGE value="feat(proxy): add streaming support for upstream responses&#10;&#10;Implemented streaming support for proxy requests, leveraging `StreamingResponse` for improved performance and resource management. Added `_is_stream_path` and `_close_stream_response` helpers to handle stream paths and clean up resources. Updated request timeout logic and client handling to accommodate streaming scenarios." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(proxy): add streaming support for upstream responses&#10;&#10;Implemented streaming support for proxy requests, leveraging `StreamingResponse` for improved performance and resource management. Added `_is_stream_path` and `_close_stream_response` helpers to handle stream paths and clean up resources. Updated request timeout logic and client handling to accommodate streaming scenarios." />
   </component>
 </project>
