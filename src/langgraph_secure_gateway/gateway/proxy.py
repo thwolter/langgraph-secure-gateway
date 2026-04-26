@@ -9,8 +9,9 @@ from typing import Any
 
 import httpx
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from sqlalchemy import select
+from starlette.background import BackgroundTask
 
 from langgraph_secure_gateway.auth.config import settings
 from langgraph_secure_gateway.auth.db import SessionLocal
@@ -26,12 +27,26 @@ logger = logging.getLogger(__name__)
 
 
 THREAD_RUN_PATH_RE = re.compile(r'^/threads/[^/]+/runs(?:/(?:stream|wait))?$')
+STREAM_PATH_RE = re.compile(
+    r'^/(?:runs/stream|threads/[^/]+/runs/stream|threads/[^/]+/runs/[^/]+/stream)$'
+)
 
 
 def _is_run_create_path(path: str) -> bool:
     if path in {'/runs', '/runs/stream', '/runs/wait'}:
         return True
     return bool(THREAD_RUN_PATH_RE.fullmatch(path))
+
+
+def _is_stream_path(path: str) -> bool:
+    return bool(STREAM_PATH_RE.fullmatch(path))
+
+
+async def _close_stream_response(
+    upstream_response: httpx.Response, client: httpx.AsyncClient
+) -> None:
+    await upstream_response.aclose()
+    await client.aclose()
 
 
 def _inject_run_config_user_id(payload: dict[str, Any], *, user_id: str) -> None:
@@ -282,15 +297,23 @@ async def _proxy_agent_request(
     except BodyRewriteError as exc:
         return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
 
+    timeout = (
+        httpx.Timeout(120.0, read=None) if _is_stream_path(upstream_path) else 120.0
+    )
+    client = httpx.AsyncClient(timeout=timeout)
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            upstream_response = await client.request(
-                method=request.method,
-                url=upstream_url,
-                headers=headers,
-                content=body,
-            )
+        request_to_upstream = client.build_request(
+            method=request.method,
+            url=upstream_url,
+            headers=headers,
+            content=body,
+        )
+        upstream_response = await client.send(
+            request_to_upstream,
+            stream=_is_stream_path(upstream_path),
+        )
     except httpx.RequestError as exc:
+        await client.aclose()
         logger.warning(
             'Agent upstream request failed',
             extra={
@@ -314,10 +337,25 @@ async def _proxy_agent_request(
     }
     if upstream_path == '/openapi.json' and upstream_response.status_code == 200:
         spec = _inject_bearer_security(upstream_response.json())
+        await client.aclose()
         return JSONResponse(status_code=200, content=spec)
 
+    if _is_stream_path(upstream_path):
+        return StreamingResponse(
+            upstream_response.aiter_raw(),
+            status_code=upstream_response.status_code,
+            headers=response_headers,
+            media_type=upstream_response.headers.get('content-type'),
+            background=BackgroundTask(
+                _close_stream_response, upstream_response, client
+            ),
+        )
+
+    content = await upstream_response.aread()
+    await client.aclose()
+
     return Response(
-        content=upstream_response.content,
+        content=content,
         status_code=upstream_response.status_code,
         headers=response_headers,
         media_type=upstream_response.headers.get('content-type'),

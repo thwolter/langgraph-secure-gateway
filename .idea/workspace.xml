@@ -18,8 +18,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(sqladmin, devops): add assistant creation UI and development Docker support&#10;&#10;Introduced a new HTML template for creating LangGraph assistants in the SQLAdmin interface, enhancing usability. Added `docker-compose.dev.yaml` file for streamlined local development with hot-reloading. Updated IntelliJ run configuration for the new Compose file.">
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(devops): add assistant creation UI and development Docker support">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Docker_Compose.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +29,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="52" />
+    <option name="cachedIndexableFilesCount" value="57" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -65,29 +67,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.Docker Compose.executor": "Run",
-    "Docker.Docker Container.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/thomas/PycharmProjects/langgraph-secure-gateway",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.intellij.python.pyrefly.PyreflyConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.Docker Compose Dev.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.Docker Compose.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.Docker Container.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas/PycharmProjects/langgraph-secure-gateway&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.python.pyrefly.PyreflyConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1776718800000" />
     <option name="spentUsd" value="0.0498868" />
@@ -119,6 +123,8 @@
       <workItem from="1776330104967" duration="46000" />
       <workItem from="1776331434226" duration="2117000" />
       <workItem from="1776710426926" duration="8104000" />
+      <workItem from="1777204520528" duration="772000" />
+      <workItem from="1777205445827" duration="1825000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -320,7 +326,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777184305307</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="feat(devops): add assistant creation UI and development Docker support">
+      <option name="closed" value="true" />
+      <created>1777186565880</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1777186565880</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
