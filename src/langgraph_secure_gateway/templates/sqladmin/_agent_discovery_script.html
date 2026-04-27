@@ -117,7 +117,7 @@
       nameInput.value = agent.name;
     }
     if (keyInput && !keyInput.value) {
-      keyInput.value = slugify(agent.name || agent.graph_id || agent.assistant_id || '');
+      keyInput.value = agent.graph_id || slugify(agent.name || agent.assistant_id || '');
     }
   });
 

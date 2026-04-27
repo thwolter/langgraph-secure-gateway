@@ -23,6 +23,7 @@ class AuthSettings(BaseSettings):
     auth_db_auto_migrate: bool = False
     gateway_upstream_secret: str = ''
     langgraph_discovery_timeout_seconds: float = 2.0
+    download_export_dir: str = '/tmp/langgraph-generated-files'
 
     model_config = SettingsConfigDict(
         env_file='.env',

@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 import logging
 import re
+from pathlib import Path
 from typing import Any
 
 import httpx
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, Response, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from sqlalchemy import select
 from starlette.background import BackgroundTask
 
@@ -49,7 +50,9 @@ async def _close_stream_response(
     await client.aclose()
 
 
-def _inject_run_config_user_id(payload: dict[str, Any], *, user_id: str) -> None:
+def _inject_run_config_identity(
+    payload: dict[str, Any], *, user_id: str, agent_key: str
+) -> None:
     config = payload.get('config')
     if not isinstance(config, dict):
         config = {}
@@ -61,6 +64,7 @@ def _inject_run_config_user_id(payload: dict[str, Any], *, user_id: str) -> None
         config['configurable'] = configurable
 
     configurable['user_id'] = user_id
+    configurable['gateway_agent_key'] = agent_key
 
 
 class BodyRewriteError(Exception):
@@ -70,14 +74,19 @@ class BodyRewriteError(Exception):
         super().__init__(detail)
 
 
-def _has_configurable_user_id(payload: dict[str, Any], *, user_id: str) -> bool:
+def _has_configurable_identity(
+    payload: dict[str, Any], *, user_id: str, agent_key: str
+) -> bool:
     config = payload.get('config')
     if not isinstance(config, dict):
         return False
     configurable = config.get('configurable')
     if not isinstance(configurable, dict):
         return False
-    return configurable.get('user_id') == user_id
+    return (
+        configurable.get('user_id') == user_id
+        and configurable.get('gateway_agent_key') == agent_key
+    )
 
 
 def _assert_run_payload_identity(
@@ -85,6 +94,7 @@ def _assert_run_payload_identity(
     path: str,
     payload: Any,
     user_id: str,
+    agent_key: str,
 ) -> None:
     if path == '/runs/batch':
         if not isinstance(payload, list):
@@ -98,14 +108,16 @@ def _assert_run_payload_identity(
                     status_code=400,
                     detail=f'Run at index {index} must be a JSON object',
                 )
-            if not _has_configurable_user_id(run, user_id=user_id):
+            if not _has_configurable_identity(
+                run, user_id=user_id, agent_key=agent_key
+            ):
                 logger.warning(
-                    'Authenticated run batch payload missing canonical user_id after rewrite',
+                    'Authenticated run batch payload missing canonical identity after rewrite',
                     extra={'path': path, 'run_index': index},
                 )
                 raise BodyRewriteError(
                     status_code=400,
-                    detail='Run payload missing required config.configurable.user_id',
+                    detail='Run payload missing required config.configurable user_id or gateway_agent_key',
                 )
         return
 
@@ -114,14 +126,14 @@ def _assert_run_payload_identity(
             status_code=400,
             detail='Run request body must be a JSON object',
         )
-    if not _has_configurable_user_id(payload, user_id=user_id):
+    if not _has_configurable_identity(payload, user_id=user_id, agent_key=agent_key):
         logger.warning(
-            'Authenticated run payload missing canonical user_id after rewrite',
+            'Authenticated run payload missing canonical identity after rewrite',
             extra={'path': path},
         )
         raise BodyRewriteError(
             status_code=400,
-            detail='Run payload missing required config.configurable.user_id',
+            detail='Run payload missing required config.configurable user_id or gateway_agent_key',
         )
 
 
@@ -151,6 +163,7 @@ def _maybe_rewrite_body_for_identity(
     method: str,
     body: bytes,
     principal: Any | None,
+    agent_key: str,
 ) -> bytes:
     if principal is None or method.upper() != 'POST':
         return body
@@ -208,12 +221,14 @@ def _maybe_rewrite_body_for_identity(
     elif path == '/runs/batch':
         for run in payload:
             if isinstance(run, dict):
-                _inject_run_config_user_id(run, user_id=user_id)
+                _inject_run_config_identity(run, user_id=user_id, agent_key=agent_key)
     elif _is_run_create_path(path):
-        _inject_run_config_user_id(payload, user_id=user_id)
+        _inject_run_config_identity(payload, user_id=user_id, agent_key=agent_key)
 
     if run_path:
-        _assert_run_payload_identity(path=path, payload=payload, user_id=user_id)
+        _assert_run_payload_identity(
+            path=path, payload=payload, user_id=user_id, agent_key=agent_key
+        )
 
     return json.dumps(payload, separators=(',', ':')).encode('utf-8')
 
@@ -293,6 +308,7 @@ async def _proxy_agent_request(
             method=request.method,
             body=body,
             principal=principal,
+            agent_key=agent_key,
         )
     except BodyRewriteError as exc:
         return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
@@ -359,6 +375,39 @@ async def _proxy_agent_request(
         status_code=upstream_response.status_code,
         headers=response_headers,
         media_type=upstream_response.headers.get('content-type'),
+    )
+
+
+@router.get('/agents/{agent_key}/files/{filename:path}', include_in_schema=False)
+async def download_agent_file(
+    agent_key: str, filename: str, request: Request
+) -> Response:
+    try:
+        with SessionLocal() as session:
+            principal = authenticate_bearer_from_headers(
+                request.headers, session=session
+            )
+    except AuthError as exc:
+        return JSONResponse(status_code=exc.status_code, content={'detail': exc.detail})
+
+    agent_or_response = _get_authorized_agent(
+        agent_key=agent_key,
+        principal=principal,
+    )
+    if isinstance(agent_or_response, Response):
+        return agent_or_response
+
+    generated_dir = Path(settings.download_export_dir).expanduser().resolve()
+    path = (generated_dir / filename).resolve()
+    if not path.is_relative_to(generated_dir) or not path.is_file():
+        return JSONResponse(
+            status_code=404,
+            content={'detail': 'Generated file not found.'},
+        )
+
+    return FileResponse(
+        path,
+        filename=path.name,
     )
 
 
