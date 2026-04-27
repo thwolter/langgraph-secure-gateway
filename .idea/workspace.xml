@@ -18,11 +18,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(auth): enhance refresh token handling with cookie and bearer support&#10;&#10;Added dual refresh token authentication mechanisms using HttpOnly cookies and Authorization Bearer headers for improved flexibility. Updated `/refresh` and `/logout` endpoints to extract tokens from both sources. Revised documentation to clarify usage for non-browser clients.">
+    <list default="true" id="35578262-836d-4e74-86d3-2fcbbd968d2d" name="Changes" comment="feat(proxy): add agent file download endpoint and enhance identity handling&#10;&#10;Introduced `/agents/{agent_key}/files/{filename}` route for downloading agent-specific files. Enhanced payload identity validation and injection logic to include `gateway_agent_key` alongside `user_id`. Updated configuration to support export directory path.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/auth/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/gateway/proxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/langgraph_secure_gateway/templates/sqladmin/_agent_discovery_script.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +124,7 @@
       <workItem from="1776710426926" duration="8104000" />
       <workItem from="1777204520528" duration="772000" />
       <workItem from="1777205445827" duration="4782000" />
-      <workItem from="1777274496897" duration="2367000" />
+      <workItem from="1777274496897" duration="4274000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -352,7 +350,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777219970344</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="feat(proxy): add agent file download endpoint and enhance identity handling&#10;&#10;Introduced `/agents/{agent_key}/files/{filename}` route for downloading agent-specific files. Enhanced payload identity validation and injection logic to include `gateway_agent_key` alongside `user_id`. Updated configuration to support export directory path.">
+      <option name="closed" value="true" />
+      <created>1777312727523</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1777312727523</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -370,7 +376,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat: add pre-commit" />
     <MESSAGE value="style: unify string quote style across codebase &#10;&#10;Replaced all double quotes with single quotes for consistency and readability. No functional changes." />
     <MESSAGE value="feat(admin): improve user management form customization&#10;&#10;Added custom labels for password fields in user management forms. Improved form arguments and widget configuration for better usability." />
     <MESSAGE value="feat(gateway): add custom OpenAPI endpoints and update API docs&#10;&#10;Configured OpenAPI schema availability at `/gateway/openapi.json` and API docs at `/gateway/docs`. Updated README to reflect the new endpoints." />
@@ -395,6 +400,7 @@
     <MESSAGE value="feat(devops): add assistant creation UI and development Docker support" />
     <MESSAGE value="feat(proxy): add streaming support for upstream responses&#10;&#10;Implemented streaming support for proxy requests, leveraging `StreamingResponse` for improved performance and resource management. Added `_is_stream_path` and `_close_stream_response` helpers to handle stream paths and clean up resources. Updated request timeout logic and client handling to accommodate streaming scenarios." />
     <MESSAGE value="feat(auth): enhance refresh token handling with cookie and bearer support&#10;&#10;Added dual refresh token authentication mechanisms using HttpOnly cookies and Authorization Bearer headers for improved flexibility. Updated `/refresh` and `/logout` endpoints to extract tokens from both sources. Revised documentation to clarify usage for non-browser clients." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): enhance refresh token handling with cookie and bearer support&#10;&#10;Added dual refresh token authentication mechanisms using HttpOnly cookies and Authorization Bearer headers for improved flexibility. Updated `/refresh` and `/logout` endpoints to extract tokens from both sources. Revised documentation to clarify usage for non-browser clients." />
+    <MESSAGE value="feat(proxy): add agent file download endpoint and enhance identity handling&#10;&#10;Introduced `/agents/{agent_key}/files/{filename}` route for downloading agent-specific files. Enhanced payload identity validation and injection logic to include `gateway_agent_key` alongside `user_id`. Updated configuration to support export directory path." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(proxy): add agent file download endpoint and enhance identity handling&#10;&#10;Introduced `/agents/{agent_key}/files/{filename}` route for downloading agent-specific files. Enhanced payload identity validation and injection logic to include `gateway_agent_key` alongside `user_id`. Updated configuration to support export directory path." />
   </component>
 </project>

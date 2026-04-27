@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, AsyncIterator
 
 import httpx
 from fastapi import APIRouter, Request
@@ -26,6 +27,9 @@ from langgraph_secure_gateway.auth.models import Agent, UserAgentAccess
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+SSE_HEARTBEAT_INTERVAL_SECONDS = 15.0
+SSE_HEARTBEAT = b': ping\n\n'
+
 
 THREAD_RUN_PATH_RE = re.compile(r'^/threads/[^/]+/runs(?:/(?:stream|wait))?$')
 STREAM_PATH_RE = re.compile(
@@ -41,6 +45,37 @@ def _is_run_create_path(path: str) -> bool:
 
 def _is_stream_path(path: str) -> bool:
     return bool(STREAM_PATH_RE.fullmatch(path))
+
+
+def _is_sse_response(upstream_response: httpx.Response) -> bool:
+    content_type = upstream_response.headers.get('content-type', '')
+    return content_type.split(';', 1)[0].strip().lower() == 'text/event-stream'
+
+
+async def _stream_with_sse_heartbeat(
+    upstream_response: httpx.Response,
+) -> AsyncIterator[bytes]:
+    chunks = upstream_response.aiter_raw().__aiter__()
+    next_chunk = asyncio.ensure_future(anext(chunks))
+    try:
+        while True:
+            done, _ = await asyncio.wait(
+                {next_chunk}, timeout=SSE_HEARTBEAT_INTERVAL_SECONDS
+            )
+            if not done:
+                yield SSE_HEARTBEAT
+                continue
+
+            try:
+                chunk = next_chunk.result()
+            except StopAsyncIteration:
+                break
+
+            yield chunk
+            next_chunk = asyncio.ensure_future(anext(chunks))
+    finally:
+        if not next_chunk.done():
+            next_chunk.cancel()
 
 
 async def _close_stream_response(
@@ -357,8 +392,18 @@ async def _proxy_agent_request(
         return JSONResponse(status_code=200, content=spec)
 
     if _is_stream_path(upstream_path):
+        is_sse_response = _is_sse_response(upstream_response)
+        stream_content = (
+            _stream_with_sse_heartbeat(upstream_response)
+            if is_sse_response
+            else upstream_response.aiter_raw()
+        )
+        if is_sse_response:
+            response_headers.setdefault('cache-control', 'no-cache')
+            response_headers.setdefault('x-accel-buffering', 'no')
+
         return StreamingResponse(
-            upstream_response.aiter_raw(),
+            stream_content,
             status_code=upstream_response.status_code,
             headers=response_headers,
             media_type=upstream_response.headers.get('content-type'),
