@@ -49,6 +49,9 @@ Optional environment variables:
 - `JWT_EXPIRE_MINUTES`: default `60`
 - `REFRESH_TOKEN_EXPIRE_DAYS`: default `14`
 - `REFRESH_COOKIE_NAME`: default `lgsg_refresh_token`
+- `REFRESH_COOKIE_PATH`: default `/auth`; use your browser-facing auth route
+  prefix, for example `/api/auth`, when the gateway is mounted behind a
+  frontend proxy
 - `REFRESH_COOKIE_SECURE`: default `true`; set to `false` only for local
   HTTP development
 - `REFRESH_COOKIE_SAMESITE`: default `lax`
@@ -192,6 +195,13 @@ Response:
 The refresh endpoint rotates the refresh cookie on each successful call. Browser
 frontends on a different origin must call login, refresh, and logout with
 credentials enabled so the HttpOnly cookie is stored and sent.
+
+If browser requests go through a frontend proxy, the cookie path must match the
+browser-facing route. For example, a Next.js proxy that exposes
+`/api/auth/login` and `/api/auth/refresh` should set
+`REFRESH_COOKIE_PATH=/api/auth`. For plain local HTTP, also set
+`REFRESH_COOKIE_SECURE=false`; otherwise browsers will not send the refresh
+cookie.
 
 Logout:
 

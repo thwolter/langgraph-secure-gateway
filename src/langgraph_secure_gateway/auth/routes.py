@@ -108,7 +108,7 @@ def _set_refresh_cookie(response: Response, refresh_token: str) -> None:
         httponly=True,
         secure=settings.refresh_cookie_secure,
         samesite=settings.refresh_cookie_samesite,
-        path='/auth',
+        path=settings.refresh_cookie_path,
     )
 
 
@@ -117,7 +117,7 @@ def _clear_refresh_cookie(response: Response) -> None:
         key=settings.refresh_cookie_name,
         secure=settings.refresh_cookie_secure,
         samesite=settings.refresh_cookie_samesite,
-        path='/auth',
+        path=settings.refresh_cookie_path,
     )
 
 

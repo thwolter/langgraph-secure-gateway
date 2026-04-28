@@ -16,6 +16,7 @@ class AuthSettings(BaseSettings):
     jwt_expire_minutes: int = 60
     refresh_token_expire_days: int = 14
     refresh_cookie_name: str = 'lgsg_refresh_token'
+    refresh_cookie_path: str = '/auth'
     refresh_cookie_secure: bool = True
     refresh_cookie_samesite: str = 'lax'
     admin_session_secret: str = 'development-only-admin-session-secret-32'
