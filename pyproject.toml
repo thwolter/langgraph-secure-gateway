@@ -57,6 +57,7 @@ dev = [
     "fastapi[standard]>=0.121.0",
     "isort>=8.0.1",
     "pre-commit>=4.5.1",
+    "pytest>=8.0.0",
     "pyrefly>=0.61.0",
     "ruff>=0.15.10",
     "ssort>=0.16.0",

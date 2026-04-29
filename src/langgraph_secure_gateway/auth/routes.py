@@ -156,7 +156,11 @@ def _find_refresh_session(
     *, refresh_token: str, session: Session
 ) -> RefreshSession | None:
     token_hash = hash_refresh_token(refresh_token)
-    statement = select(RefreshSession).where(RefreshSession.token_hash == token_hash)
+    statement = (
+        select(RefreshSession)
+        .where(RefreshSession.token_hash == token_hash)
+        .with_for_update()
+    )
     return session.execute(statement).scalar_one_or_none()
 
 
